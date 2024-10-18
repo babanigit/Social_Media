@@ -1,1 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
+
+/*
+@import url("https://hey.xyz/_next/static/css/b85719ef6616f043.css");
+@import url("https://hey.xyz/_next/static/css/48cd7ce8763ba4f4.css");*/
+
+@import url("./assets/css1.css");
+@import url("./assets/css2.css");
+
