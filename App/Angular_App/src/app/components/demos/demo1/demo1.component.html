@@ -1,0 +1,70 @@
+<!-- src/app/components/tweet-list/tweet-list.component.html -->
+
+<div class="tweet-container">
+  <!-- Loading and Error States -->
+  <div *ngIf="loading" class="loading">
+    Loading tweets...
+  </div>
+
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+
+  <!-- Tweet List -->
+  <div *ngFor="let user of users" class="user-section">
+    <div class="user-header">
+      <div class="user-info">
+        <img
+          [src]="user.profile_image || 'assets/default-profile.png'"
+          [alt]="user.username"
+          class="profile-image"
+        >
+        <div class="user-details">
+          <h3>{{ user.username }}</h3>
+          <div class="user-stats">
+            <span>{{ user.followers_count }} Followers</span>
+            <span>{{ user.following_count }} Following</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tweets-list">
+      <div *ngFor="let tweet of user.tweets" class="tweet">
+        <p class="tweet-content">{{ tweet.content }}</p>
+        <img *ngIf="tweet.image" [src]="tweet.image" alt="Tweet image" class="tweet-image">
+        <div class="tweet-metadata">
+          <span>{{ tweet.created_at | date }}</span>
+          <div class="tweet-stats">
+            <span>{{ tweet.likes_count }} Likes</span>
+            <span>{{ tweet.comments_count }} Comments</span>
+            <span>{{ tweet.retweets_count }} Retweets</span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="user.tweets.length === 0" class="no-tweets">
+        No tweets yet.
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button
+      (click)="previousPage()"
+      [disabled]="!hasPrevious"
+      class="pagination-button"
+    >
+      Previous
+    </button>
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+    <button
+      (click)="nextPage()"
+      [disabled]="!hasNext"
+      class="pagination-button"
+    >
+      Next
+    </button>
+  </div>
+</div>

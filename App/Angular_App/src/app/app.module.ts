@@ -5,18 +5,28 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { NavbarModule } from './components/navbar/navbar.module';
+import { Demo1Module } from './components/demos/demo1/demo1.module';
+import { GetApiService } from './services/get-api.service';
+import { HttpClientModule } from '@angular/common/http';  // Import HttpClientModule
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NavbarModule
+    NavbarModule,
+    Demo1Module,
+    HttpClientModule
+
+
   ],
   providers: [
-    provideClientHydration()
+    provideClientHydration(),
+    GetApiService
+
   ],
   bootstrap: [AppComponent]
 })
