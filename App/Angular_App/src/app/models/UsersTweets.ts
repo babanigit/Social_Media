@@ -1,6 +1,6 @@
 // src/app/interfaces/tweet.interface.ts
 
-export interface Tweet {
+export interface ITweet {
   id: number;
   content: string;
   image: string | null;
@@ -10,17 +10,17 @@ export interface Tweet {
   retweets_count: number;
 }
 
-export interface User {
+export interface IUser {
   id: number;
   username: string;
   profile_image: string | null;
   followers_count: number;
   following_count: number;
-  tweets: Tweet[];
+  tweets: ITweet[];
 }
 
-export interface TweetResponse {
-  users: User[];
+export interface ITweetResponse {
+  users: IUser[];
   total_pages: number;
   current_page: number;
   has_next: boolean;

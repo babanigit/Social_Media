@@ -14,6 +14,7 @@
   <div *ngFor="let user of users" class="user-section">
     <div class="user-header">
       <div class="user-info">
+        <!-- [src]="user.profile_image || 'assets/default-profile.png'" -->
         <img
           [src]="user.profile_image || 'assets/default-profile.png'"
           [alt]="user.username"

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { User, TweetResponse } from '../../../models/UsersTweets';
+import { IUser, ITweetResponse } from '../../../models/UsersTweets';
 import { GetApiService } from '../../../services/get-api.service';
 
 @Component({
@@ -8,7 +8,7 @@ import { GetApiService } from '../../../services/get-api.service';
   styleUrl: './demo1.component.css'
 })
 export class Demo1Component implements OnInit {
-  users: User[] = [];
+  users: IUser[] = [];
   currentPage = 1;
   totalPages = 1;
   hasNext = false;
@@ -28,7 +28,7 @@ export class Demo1Component implements OnInit {
 
     this.tweetService.getTweets(page, 10, userId, followingOnly)
       .subscribe({
-        next: (response: TweetResponse) => {
+        next: (response: ITweetResponse) => {
           this.users = response.users;
           this.currentPage = response.current_page;
           this.totalPages = response.total_pages;
