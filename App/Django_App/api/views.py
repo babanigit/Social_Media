@@ -266,58 +266,67 @@ def get_tweets(request):
             per_page = int(request.GET.get("per_page", 10))
             user_id = request.GET.get("user_id")
             following_only = request.GET.get("following_only") == "true"
-
-            tweets = (
-                Tweet.objects.select_related("user")
-                .prefetch_related("likes", "comments", "retweets")
-                .annotate(
-                    like_count=Count("likes"),
-                    comment_count=Count("comments"),
-                    retweet_count=Count("retweets"),
-                )
+            
+            # Start with users query
+            users = User.objects.annotate(
+                followers_count=Count('followers'),
+                following_count=Count('following')
             )
-
+            
+            # Filter users if needed
             if user_id:
-                tweets = tweets.filter(user_id=user_id)
-
+                users = users.filter(id=user_id)
+            
             token = request.COOKIES.get("auth_token")
             if following_only and token:
-                
                 try:
-                    user = User.objects.get(token=request.COOKIES.get("auth_token"))
-                    following_ids = user.following.values_list("id", flat=True)
-                    tweets = tweets.filter(user_id__in=following_ids)
+                    current_user = User.objects.get(token=token)
+                    following_ids = current_user.following.values_list("id", flat=True)
+                    users = users.filter(id__in=following_ids)
                 except User.DoesNotExist:
-                    pass
-
-            paginator = Paginator(tweets.order_by("-created_at"), per_page)
+                    return JsonResponse({"error": "Invalid authentication token"}, status=401)
+            
+            # Paginate users instead of tweets
+            paginator = Paginator(users.order_by("id"), per_page)
             page_obj = paginator.get_page(page)
-
-            tweets_data = [
-                {
-                    "id": tweet.id,
-                    "content": tweet.content,
-                    "image": tweet.image.url if tweet.image else None,
-                    "created_at": tweet.created_at,
-                    "user": {
-                        "id": tweet.user.id,
-                        "username": tweet.user.username,
-                        "profile_image": (
-                            tweet.user.profile_image.url
-                            if tweet.user.profile_image
-                            else None
-                        ),
-                    },
-                    "likes_count": tweet.like_count,
-                    "comments_count": tweet.comment_count,
-                    "retweets_count": tweet.retweet_count,
+            
+            users_data = []
+            for user in page_obj:
+                # Get tweets for each user with annotations
+                user_tweets = (
+                    Tweet.objects.filter(user=user)
+                    .annotate(
+                        like_count=Count("likes"),
+                        comment_count=Count("comments"),
+                        retweet_count=Count("retweets"),
+                    )
+                    .order_by("-created_at")
+                )
+                
+                user_data = {
+                    "id": user.id,
+                    "username": user.username,
+                    "profile_image": user.profile_image.url if user.profile_image else None,
+                    "followers_count": user.followers_count,
+                    "following_count": user.following_count,
+                    "tweets": [
+                        {
+                            "id": tweet.id,
+                            "content": tweet.content,
+                            "image": tweet.image.url if tweet.image else None,
+                            "created_at": tweet.created_at,
+                            "likes_count": tweet.like_count,
+                            "comments_count": tweet.comment_count,
+                            "retweets_count": tweet.retweet_count,
+                        }
+                        for tweet in user_tweets
+                    ]
                 }
-                for tweet in page_obj
-            ]
-
+                users_data.append(user_data)
+            
             return JsonResponse(
                 {
-                    "tweets": tweets_data,
+                    "users": users_data,
                     "total_pages": paginator.num_pages,
                     "current_page": page,
                     "has_next": page_obj.has_next(),
@@ -325,10 +334,8 @@ def get_tweets(request):
                 },
                 status=200,
             )
-
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
-
     return JsonResponse({"error": "Method not allowed"}, status=405)
 
 
