@@ -3,7 +3,7 @@ from .views import (
     register,
     login,
     add_post,
-    update_post,
+    update_post,        
     delete_post,
     view_posts,
     comment_on_post,
