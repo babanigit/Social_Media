@@ -7,7 +7,8 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { NavbarModule } from './components/navbar/navbar.module';
 import { Demo1Module } from './components/demos/demo1/demo1.module';
 import { GetApiService } from './services/get-api.service';
-import { HttpClientModule } from '@angular/common/http';  // Import HttpClientModule
+import { HttpClientModule } from '@angular/common/http';
+import { MainWelcomeComponent } from './components/main-welcome/main-welcome.component';  // Import HttpClientModule
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { HttpClientModule } from '@angular/common/http';  // Import HttpClientMo
     AppRoutingModule,
     NavbarModule,
     Demo1Module,
-    HttpClientModule
+    HttpClientModule,
+    MainWelcomeComponent
 
 
   ],
