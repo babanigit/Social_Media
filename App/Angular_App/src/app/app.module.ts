@@ -8,7 +8,8 @@ import { NavbarModule } from './components/navbar/navbar.module';
 import { Demo1Module } from './components/demos/demo1/demo1.module';
 import { GetApiService } from './services/get-api.service';
 import { HttpClientModule } from '@angular/common/http';
-import { MainWelcomeComponent } from './components/main-welcome/main-welcome.component';  // Import HttpClientModule
+import { MainWelcomeComponent } from './components/main-welcome/main-welcome.component';
+import { NotFoundPageComponent } from './components/not-found-page/not-found-page.component';  // Import HttpClientModule
 
 @NgModule({
   declarations: [
@@ -21,8 +22,6 @@ import { MainWelcomeComponent } from './components/main-welcome/main-welcome.com
     NavbarModule,
     Demo1Module,
     HttpClientModule,
-    MainWelcomeComponent
-
 
   ],
   providers: [

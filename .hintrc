@@ -17,6 +17,15 @@
       {
         "image-alt": "off"
       }
+    ],
+    "no-inline-styles": "off",
+    "compat-api/html": [
+      "default",
+      {
+        "ignore": [
+          "video[playsinline]"
+        ]
+      }
     ]
   }
 }
