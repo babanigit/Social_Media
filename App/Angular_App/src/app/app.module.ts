@@ -9,7 +9,8 @@ import { NavbarModule } from './components/navbar/navbar.module';
 import { GetApiService } from './services/get-api.service';
 import { HttpClientModule } from '@angular/common/http';
 import { MainWelcomeComponent } from './components/main-welcome/main-welcome.component';
-import { NotFoundPageComponent } from './components/not-found-page/not-found-page.component';  // Import HttpClientModule
+import { NotFoundPageComponent } from './components/not-found-page/not-found-page.component';
+import { TimeAgoPipe } from './pipes/time-ago.pipe';  // Import HttpClientModule
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { NotFoundPageComponent } from './components/not-found-page/not-found-pag
   ],
   providers: [
     provideClientHydration(),
-    GetApiService
+    GetApiService,
+
 
   ],
   bootstrap: [AppComponent]
