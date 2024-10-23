@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { NavbarModule } from './components/navbar/navbar.module';
-import { Demo1Module } from './components/demos/demo1/demo1.module';
+// import { Demo1Module } from './components/demos/demo1/demo1.module';
 import { GetApiService } from './services/get-api.service';
 import { HttpClientModule } from '@angular/common/http';
 import { MainWelcomeComponent } from './components/main-welcome/main-welcome.component';
@@ -20,7 +20,7 @@ import { NotFoundPageComponent } from './components/not-found-page/not-found-pag
     BrowserModule,
     AppRoutingModule,
     NavbarModule,
-    Demo1Module,
+    // Demo1Module,
     HttpClientModule,
 
   ],

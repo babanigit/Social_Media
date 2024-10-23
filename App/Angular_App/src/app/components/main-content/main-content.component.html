@@ -10,11 +10,11 @@
                 padding-top: auto;
                 padding-bottom: auto;
               ">
-              <ng-container *ngFor="let user of users">
+              <ng-container *ngFor="let data of tweets">
 
                 <!-- {{user | json}} -->
 
-                <div *ngIf="user.tweets" data-index="4" data-known-size="228" data-item-index="4" style="overflow-anchor: none">
+                <div  data-index="4" data-known-size="228" data-item-index="4" style="overflow-anchor: none">
                   <article class="cursor-pointer px-5 pt-4 pb-3 hover:bg-gray-100 dark:hover:bg-gray-900">
                     <span></span>
                     <div class="flex items-start space-x-3">
@@ -27,11 +27,11 @@
                         <div class="flex w-full items-start justify-between">
                           <div class="flex max-w-sm flex-wrap items-center">
                             <a class="truncate outline-none hover:underline focus:underline"
-                              href="/u/andresbriceno"><span><span data-state="closed"><span class="font-semibold">{{user.name}}
+                              href="/u/andresbriceno"><span><span data-state="closed"><span class="font-semibold">{{data.user.name}}
                                     </span></span></span></a><a
                               class="truncate outline-none hover:underline focus:underline"
                               href="/u/andresbriceno"><span><span data-state="closed"><span
-                                    class="ld-text-gray-500 ml-1 truncate text-sm">&#64;{{user.username}}</span></span></span></a><svg
+                                    class="ld-text-gray-500 ml-1 truncate text-sm">&#64;{{data.user.username}}</span></span></span></a><svg
                               xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
                               aria-hidden="true" data-slot="icon" class="text-brand-500 ml-1 size-4">
                               <path fill-rule="evenodd"

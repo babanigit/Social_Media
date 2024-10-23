@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ITweetResponse } from '../models/UsersTweets';
+import { IGetTweets } from '../models/GetTweets';
 
 
 @Injectable({
@@ -17,7 +17,7 @@ export class GetApiService {
     per_page: number = 10,
     user_id?: number,
     following_only: boolean = false
-  ): Observable<ITweetResponse> {
+  ): Observable<IGetTweets> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('per_page', per_page.toString());
@@ -30,6 +30,6 @@ export class GetApiService {
       params = params.set('following_only', 'true');
     }
 
-    return this.http.get<ITweetResponse>(this.apiUrl, { params });
+    return this.http.get<IGetTweets>(this.apiUrl, { params });
   }
 }

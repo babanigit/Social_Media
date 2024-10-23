@@ -1,12 +1,12 @@
 export interface IGetTweets {
-  tweets: Tweet[]
+  tweets: ITweet[]
   total_pages: number
   current_page: number
   has_next: boolean
   has_previous: boolean
 }
 
-export interface Tweet {
+export interface ITweet {
   id: number
   content: string
   image: any
@@ -14,10 +14,10 @@ export interface Tweet {
   likes_count: number
   comments_count: number
   retweets_count: number
-  user: User
+  user: IUser
 }
 
-export interface User {
+export interface IUser {
   id: number
   username: string
   name: string
