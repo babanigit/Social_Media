@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 import secrets
 
 class User(AbstractUser):
+    name = models.CharField(max_length=255, blank=True)  # CharField with a sensible max length
     email = models.EmailField(unique=True, error_messages={"unique": "A user with this email already exists."})
     bio = models.TextField(blank=True, null=True)
     token = models.CharField(max_length=128, blank=True, null=True, unique=True)

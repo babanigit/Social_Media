@@ -13,6 +13,7 @@ export interface ITweet {
 export interface IUser {
   id: number;
   username: string;
+  name:string;
   profile_image: string | null;
   followers_count: number;
   following_count: number;
