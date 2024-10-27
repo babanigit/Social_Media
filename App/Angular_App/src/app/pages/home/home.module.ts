@@ -16,8 +16,7 @@ import { MainContentModule } from '../../components/main-content/main-content.mo
     CommonModule,
     HomeRoutingModule,
     MainWelcomeComponent,
-    MainContentModule
-
+    MainContentModule,
   ]
 })
 export class HomeModule { }

@@ -47,11 +47,16 @@ export class GetApiService {
     });
   }
 
+  storeToLocalStorage(){
+
+  }
+
   storeTokenFromCookie() {
     const cookies = document.cookie.split('; ');
     const authTokenCookie = cookies.find(row => row.startsWith('auth_token='));
 
     if (authTokenCookie) {
+      console.log("stored on local host")
       const token = authTokenCookie.split('=')[1];
       localStorage.setItem('auth_token', token);
     }

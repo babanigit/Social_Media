@@ -22,8 +22,8 @@ def register(request):
                 data = json.loads(request.body)
             else:
                 data = request.POST
-                
-            name=data.get("name")
+
+            name = data.get("name")
             username = data.get("username")
             email = data.get("email")
             password = data.get("password")
@@ -53,7 +53,7 @@ def register(request):
             return JsonResponse(
                 {
                     "message": "Registration successful",
-                    "name" : user.name,
+                    "name": user.name,
                     "username": user.username,
                     "email": user.email,
                     "bio": user.bio,
@@ -100,7 +100,7 @@ def login(request):
                             "profile_image": (
                                 user.profile_image.url if user.profile_image else None
                             ),
-                            "token": user.token  # Include token for local storage
+                            "token": user.token,  # Include token for local storage
                         },
                         status=200,
                     )
@@ -123,6 +123,7 @@ def login(request):
 
     return JsonResponse({"error": "Method not allowed"}, status=405)
 
+
 @csrf_exempt
 def logout(request):
     if request.method == "POST":
@@ -135,14 +136,22 @@ def logout(request):
 @csrf_exempt
 def create_tweet(request):
     if request.method == "POST":
+        # Attempt to retrieve the token from the cookie first
         token = request.COOKIES.get("auth_token")
+
+        # If no cookie is present, check the Authorization header for the token
         if not token:
-            return JsonResponse({"error": "Authentication required"}, status=401)
+            auth_header = request.headers.get("Authorization")
+            if auth_header and auth_header.startswith("Token "):
+                token = auth_header.split(" ")[1]  # Extract the token part
+            else:
+                return JsonResponse({"error": "Authentication required"}, status=401)
 
         try:
+            # Verify the user by matching the token
             user = User.objects.get(token=token)
 
-            # Check the content type and parse the data accordingly
+            # Check content type and parse the data accordingly
             if request.content_type == "application/json":
                 data = json.loads(request.body)
                 content = data.get("content", "")
@@ -161,7 +170,7 @@ def create_tweet(request):
             # Create the tweet
             tweet = Tweet.objects.create(user=user, content=content)
 
-            # If an image is provided, attach it to the tweet
+            # Attach the image if provided
             if image:
                 tweet.image = image
                 tweet.save()
@@ -184,7 +193,6 @@ def create_tweet(request):
 
     return JsonResponse({"error": "Method not allowed"}, status=405)
 
-
 @csrf_exempt
 def update_tweet(request, tweet_id):
     if request.method in ["PUT", "PATCH"]:
@@ -206,7 +214,9 @@ def update_tweet(request, tweet_id):
             content = data.get("content", None)
 
             if not content:
-                return JsonResponse({"error": "Content is required to update the tweet"}, status=400)
+                return JsonResponse(
+                    {"error": "Content is required to update the tweet"}, status=400
+                )
 
             # Update the tweet content and save
             tweet.content = content
@@ -226,10 +236,15 @@ def update_tweet(request, tweet_id):
             return JsonResponse({"error": "Invalid authentication token"}, status=401)
         except Tweet.DoesNotExist:
             return JsonResponse(
-                {"error": "Tweet not found or you're not authorized to update this tweet"}, status=404
+                {
+                    "error": "Tweet not found or you're not authorized to update this tweet"
+                },
+                status=404,
             )
         except Exception as e:
-            return JsonResponse({"error": f"An unexpected error occurred: {str(e)}"}, status=500)
+            return JsonResponse(
+                {"error": f"An unexpected error occurred: {str(e)}"}, status=500
+            )
 
     return JsonResponse({"error": "Method not allowed"}, status=405)
 
@@ -249,12 +264,12 @@ def delete_tweet(request, tweet_id):
 
         except User.DoesNotExist:
             return JsonResponse({"error": "Invalid authentication token"}, status=401)
-        
+
         except Tweet.DoesNotExist:
             return JsonResponse(
                 {"error": "Tweet not found or unauthorized"}, status=404
             )
-            
+
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
 
@@ -268,17 +283,16 @@ def get_Users_and_Tweets(request):
             per_page = int(request.GET.get("per_page", 10))
             user_id = request.GET.get("user_id")
             following_only = request.GET.get("following_only") == "true"
-            
+
             # Start with users query
             users = User.objects.annotate(
-                followers_count=Count('followers'),
-                following_count=Count('following')
+                followers_count=Count("followers"), following_count=Count("following")
             )
-            
+
             # Filter users if needed
             if user_id:
                 users = users.filter(id=user_id)
-            
+
             token = request.COOKIES.get("auth_token")
             if following_only and token:
                 try:
@@ -286,12 +300,14 @@ def get_Users_and_Tweets(request):
                     following_ids = current_user.following.values_list("id", flat=True)
                     users = users.filter(id__in=following_ids)
                 except User.DoesNotExist:
-                    return JsonResponse({"error": "Invalid authentication token"}, status=401)
-            
+                    return JsonResponse(
+                        {"error": "Invalid authentication token"}, status=401
+                    )
+
             # Paginate users instead of tweets
             paginator = Paginator(users.order_by("id"), per_page)
             page_obj = paginator.get_page(page)
-            
+
             users_data = []
             for user in page_obj:
                 # Get tweets for each user with annotations
@@ -304,12 +320,14 @@ def get_Users_and_Tweets(request):
                     )
                     .order_by("-created_at")
                 )
-                
+
                 user_data = {
                     "id": user.id,
                     "username": user.username,
                     "name": user.name,
-                    "profile_image": user.profile_image.url if user.profile_image else None,
+                    "profile_image": (
+                        user.profile_image.url if user.profile_image else None
+                    ),
                     "followers_count": user.followers_count,
                     "following_count": user.following_count,
                     "tweets": [
@@ -323,10 +341,10 @@ def get_Users_and_Tweets(request):
                             "retweets_count": tweet.retweet_count,
                         }
                         for tweet in user_tweets
-                    ]
+                    ],
                 }
                 users_data.append(user_data)
-            
+
             return JsonResponse(
                 {
                     "users": users_data,
@@ -349,24 +367,28 @@ def get_tweets(request):
             per_page = int(request.GET.get("per_page", 10))
             user_id = request.GET.get("user_id")
             following_only = request.GET.get("following_only") == "true"
-            
+
             # Start with tweets query with annotations
-            tweets = Tweet.objects.annotate(
-                like_count=Count("likes"),
-                comment_count=Count("comments"),
-                retweet_count=Count("retweets")
-            ).select_related('user').order_by("-created_at")
-            
+            tweets = (
+                Tweet.objects.annotate(
+                    like_count=Count("likes"),
+                    comment_count=Count("comments"),
+                    retweet_count=Count("retweets"),
+                )
+                .select_related("user")
+                .order_by("-created_at")
+            )
+
             # Add user annotations to avoid N+1 queries
             tweets = tweets.annotate(
-                user_followers_count=Count('user__followers'),
-                user_following_count=Count('user__following')
+                user_followers_count=Count("user__followers"),
+                user_following_count=Count("user__following"),
             )
-            
+
             # Filter tweets if needed
             if user_id:
                 tweets = tweets.filter(user_id=user_id)
-            
+
             token = request.COOKIES.get("auth_token")
             if following_only and token:
                 try:
@@ -374,12 +396,14 @@ def get_tweets(request):
                     following_ids = current_user.following.values_list("id", flat=True)
                     tweets = tweets.filter(user_id__in=following_ids)
                 except User.DoesNotExist:
-                    return JsonResponse({"error": "Invalid authentication token"}, status=401)
-            
+                    return JsonResponse(
+                        {"error": "Invalid authentication token"}, status=401
+                    )
+
             # Paginate tweets
             paginator = Paginator(tweets, per_page)
             page_obj = paginator.get_page(page)
-            
+
             tweets_data = []
             for tweet in page_obj:
                 tweet_data = {
@@ -394,13 +418,17 @@ def get_tweets(request):
                         "id": tweet.user.id,
                         "username": tweet.user.username,
                         "name": tweet.user.name,
-                        "profile_image": tweet.user.profile_image.url if tweet.user.profile_image else None,
+                        "profile_image": (
+                            tweet.user.profile_image.url
+                            if tweet.user.profile_image
+                            else None
+                        ),
                         "followers_count": tweet.user_followers_count,
                         "following_count": tweet.user_following_count,
-                    }
+                    },
                 }
                 tweets_data.append(tweet_data)
-            
+
             return JsonResponse(
                 {
                     "tweets": tweets_data,
@@ -414,6 +442,7 @@ def get_tweets(request):
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
     return JsonResponse({"error": "Method not allowed"}, status=405)
+
 
 @csrf_exempt
 def like_tweet(request, tweet_id):

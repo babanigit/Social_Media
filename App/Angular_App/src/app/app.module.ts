@@ -10,12 +10,12 @@ import { GetApiService } from './services/get-api.service';
 import { HttpClientModule } from '@angular/common/http';
 import { MainWelcomeComponent } from './components/main-welcome/main-welcome.component';
 import { NotFoundPageComponent } from './components/not-found-page/not-found-page.component';
-import { TimeAgoPipe } from './pipes/time-ago.pipe';  // Import HttpClientModule
+import { TimeAgoPipe } from './pipes/time-ago.pipe';
+import { CreateTweetComponent } from './components/create-tweet/create-tweet.component';  // Import HttpClientModule
 
 @NgModule({
   declarations: [
     AppComponent,
-
   ],
   imports: [
     BrowserModule,

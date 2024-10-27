@@ -25,6 +25,12 @@ export class LoginComponent {
         this.successMessage = 'Login successful';
         console.log('User logged in successfully:', response);
         // Handle successful login (e.g., store user info, redirect, etc.)
+        const token = response.token; // Assuming 'token' is the key in the JSON response
+        if (token) {
+          console.log("Token stored in local storage");
+          localStorage.setItem('auth_token', token);
+        }
+
       },
       (error) => {
         this.errorMessage = error.error?.error || 'Login failed';

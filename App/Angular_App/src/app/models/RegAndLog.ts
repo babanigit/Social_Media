@@ -13,4 +13,5 @@ export interface ILoginResponse {
   email: string;
   bio: string;
   profile_image?: string; // Optional since it might be null
+  token: string; // JWT token for authentication
 }
