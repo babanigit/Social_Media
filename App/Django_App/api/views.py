@@ -100,6 +100,7 @@ def login(request):
                             "profile_image": (
                                 user.profile_image.url if user.profile_image else None
                             ),
+                            "token": user.token  # Include token for local storage
                         },
                         status=200,
                     )
@@ -108,8 +109,8 @@ def login(request):
                         key="auth_token",
                         value=user.token,
                         httponly=True,
-                        secure=True,
-                        samesite="Lax",
+                        secure=True,  # Set True for HTTPS environments
+                        samesite="None",  # Allows cross-site cookies
                         max_age=7 * 24 * 60 * 60,  # 7 days
                     )
                     return response
@@ -121,7 +122,6 @@ def login(request):
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Method not allowed"}, status=405)
-
 
 @csrf_exempt
 def logout(request):
