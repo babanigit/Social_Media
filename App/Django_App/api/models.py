@@ -8,7 +8,7 @@ class User(AbstractUser):
     email = models.EmailField(unique=True, error_messages={"unique": "A user with this email already exists."})
     bio = models.TextField(blank=True, null=True)
     token = models.CharField(max_length=128, blank=True, null=True, unique=True)
-    profile_image = models.ImageField(upload_to="profile_images/", blank=True, null=True)  # Profile image
+    profile_image = models.ImageField(upload_to="media/profile_images/", blank=True, null=True)  # Profile image
     followers = models.ManyToManyField("self", symmetrical=False, related_name="following", blank=True)
 
 
@@ -43,7 +43,7 @@ class User(AbstractUser):
 class Tweet(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tweets")
     content = models.TextField()
-    image = models.ImageField(upload_to="tweet_images/", blank=True, null=True)  # Optional tweet image
+    image = models.ImageField(upload_to="media/tweet_images/", blank=True, null=True)  # Optional tweet image
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     likes = models.ManyToManyField(User, related_name="liked_tweets", blank=True)

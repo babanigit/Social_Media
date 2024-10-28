@@ -8,6 +8,7 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
+    path('user/', views.get_user_info, name='user'),
     
     # Tweet operations
     path('tweets/', views.get_tweets, name='get_tweets'),

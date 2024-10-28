@@ -23,7 +23,7 @@
               ">
                 <ng-container *ngFor="let data of tweets">
 
-                  {{data | json}}
+                  <!-- {{data | json}} -->
 
                   <div data-index="4" data-known-size="228" data-item-index="4" style="overflow-anchor: none">
                     <article class="cursor-pointer px-5 pt-4 pb-3 hover:bg-gray-100 dark:hover:bg-gray-900">
@@ -32,8 +32,12 @@
                         <a class="contents" href="/u/andresbriceno"><img alt="0xf6b0"
                             class="size-11 z-[1] cursor-pointer rounded-full border bg-gray-200 dark:border-gray-700"
                             height="44" loading="lazy"
-                            src="https://ik.imagekit.io/lens/media-snapshot/tr:w-350,h-350,q-80/d2a0ab0f9c3980fdf0d0e56097fe4773078b6efe74d54c4e15d8b6523e001ffb.png"
-                            width="44" /></a>
+
+                            [src]=" 'http://127.0.0.1:8000' + data.user.profile_image "
+
+                            />
+
+                          </a>
                         <div class="w-[calc(100%-55px)]">
                           <div class="flex w-full items-start justify-between">
                             <div class="flex max-w-sm flex-wrap items-center">

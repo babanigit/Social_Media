@@ -16,6 +16,10 @@ from dotenv import load_dotenv
 
 import os
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # Set Secure flag and SameSite based on environment
 if os.getenv('DJANGO_ENV') == 'production':
     SESSION_COOKIE_SECURE = True

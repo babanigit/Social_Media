@@ -15,6 +15,45 @@ def index(request):
 
 
 @csrf_exempt
+def get_user_info(request):
+    if request.method == "GET":
+        # Attempt to retrieve the token from the cookie first
+        token = request.COOKIES.get("auth_token")
+
+        # If no cookie is present, check the Authorization header for the token
+        if not token:
+            auth_header = request.headers.get("Authorization")
+            if auth_header and auth_header.startswith("Token "):
+                token = auth_header.split(" ")[1]  # Extract the token part
+            else:
+                return JsonResponse({"error": "Authentication required"}, status=401)
+
+        try:
+            # Verify the user by matching the token
+            user = User.objects.get(token=token)
+
+            # Return user information
+            return JsonResponse(
+                {
+                    "username": user.username,
+                    "email": user.email,
+                    "bio": user.bio,
+                    "profile_image": (
+                        user.profile_image.url if user.profile_image else None
+                    ),
+                },
+                status=200,
+            )
+
+        except User.DoesNotExist:
+            return JsonResponse({"error": "Invalid token"}, status=401)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Method not allowed"}, status=405)
+
+
+@csrf_exempt
 def register(request):
     if request.method == "POST":
         try:
@@ -192,6 +231,7 @@ def create_tweet(request):
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Method not allowed"}, status=405)
+
 
 @csrf_exempt
 def update_tweet(request, tweet_id):
