@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { IGetTweets } from '../models/GetTweets';
 import { ILoginResponse, IRegisterResponse } from '../models/RegAndLog';
@@ -9,7 +9,11 @@ import { ILoginResponse, IRegisterResponse } from '../models/RegAndLog';
   providedIn: 'root',
 })
 export class GetApiService {
-  private readonly apiUrl = 'http://127.0.0.1:8000/api/tweets/';
+
+  private apiUrl = 'http://localhost:8000/api'; // Replace with your Django API URL
+
+
+  private readonly getTweetsApi = 'http://127.0.0.1:8000/api/tweets/';
   private readonly registerUrl = 'http://127.0.0.1:8000/api/register/';
   private readonly loginUrl = 'http://127.0.0.1:8000/api/login/';
 
@@ -33,7 +37,7 @@ export class GetApiService {
       params = params.set('following_only', 'true');
     }
 
-    return this.http.get<IGetTweets>(this.apiUrl, { params });
+    return this.http.get<IGetTweets>(this.getTweetsApi, { params });
   }
 
   register(userData: FormData): Observable<IRegisterResponse> {
@@ -46,8 +50,23 @@ export class GetApiService {
       withCredentials: true, // To handle cookies
     });
   }
+  createTweet(content: string, image?: File): Observable<any> {
+    const token = localStorage.getItem('auth_token');  // Retrieve token from local storage
+    console.log("the token is: " + JSON.stringify(token));
+    const headers = new HttpHeaders({
+      'Authorization': `Token ${token}`
+    });
 
-  storeToLocalStorage(){
+    const formData = new FormData();
+    formData.append('content', content);
+    if (image) {
+      formData.append('image', image, image.name);
+    }
+
+    return this.http.post(`${this.apiUrl}/tweets/create/`, formData, { headers });
+  }
+
+  storeToLocalStorage() {
 
   }
 

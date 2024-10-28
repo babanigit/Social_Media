@@ -1,1 +1,11 @@
 <p>create-tweet works!</p>
+
+<!-- create-tweet.component.html -->
+<div class="create-tweet-container">
+  <form (submit)="onSubmit()">
+    <textarea [(ngModel)]="content" placeholder="What's happening?" required [ngModelOptions]="{standalone: true}" ></textarea>
+    <input type="file" (change)="onFileSelected($event)"  />
+    <button type="submit">Tweet</button>
+  </form>
+</div>
+

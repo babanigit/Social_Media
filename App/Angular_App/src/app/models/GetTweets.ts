@@ -9,7 +9,7 @@ export interface IGetTweets {
 export interface ITweet {
   id: number
   content: string
-  image: any
+  image: string | undefined
   created_at: string
   likes_count: number
   comments_count: number
@@ -21,7 +21,7 @@ export interface IUser {
   id: number
   username: string
   name: string
-  profile_image: any
+  profile_image?: string
   followers_count: number
   following_count: number
 }

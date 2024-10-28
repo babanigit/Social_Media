@@ -15,6 +15,7 @@ export class MainContentComponent implements OnInit {
   hasPrevious = false;
   loading = false;
   error: string | null = null;
+  image: any;  // Add a new property to store the user's profile image
 
   constructor(private tweetService: GetApiService) {}
 
@@ -29,6 +30,7 @@ export class MainContentComponent implements OnInit {
     this.tweetService.getTweets(page, 10, userId, followingOnly)
       .subscribe({
         next: (response: IGetTweets) => {
+          this.image = response.tweets[0].image;
           this.tweets = response.tweets;  // Update to use tweets
           this.currentPage = response.current_page;
           this.totalPages = response.total_pages;
