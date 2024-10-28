@@ -1,0 +1,25 @@
+<div *ngIf="userInfo">
+  <div class="user-info">
+    <img *ngIf="userInfo.profile_image" [src]="userInfo.profile_image" alt="{{ userInfo.username }}" width="100" />
+    <h2>{{ userInfo.username }}</h2>
+    <p>Email: {{ userInfo.email }}</p>
+    <p>Bio: {{ userInfo.bio }}</p>
+    <p>Followers: {{ userInfo.followers_count }} | Following: {{ userInfo.following_count }}</p>
+  </div>
+
+  <div class="tweets">
+    <h3>User Tweets</h3>
+    <div *ngFor="let tweet of userInfo.tweets" class="tweet">
+      <p>{{ tweet.content }}</p>
+      <img *ngIf="tweet.image" [src]="tweet.image" alt="Tweet image" width="100" />
+      <p>Likes: {{ tweet.likes_count }}, Comments: {{ tweet.comments_count }}, Retweets: {{ tweet.retweets_count }}</p>
+      <p>Posted at: {{ tweet.created_at }}</p>
+    </div>
+  </div>
+
+  <div class="pagination">
+    <button (click)="loadPreviousPage()" [disabled]="!userInfo.has_previous">Previous</button>
+    <span>Page {{ currentPage }} of {{ userInfo.total_pages }}</span>
+    <button (click)="loadNextPage()" [disabled]="!userInfo.has_next">Next</button>
+  </div>
+</div>

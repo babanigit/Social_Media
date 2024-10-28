@@ -50,12 +50,10 @@ export class GetApiService {
       withCredentials: true, // To handle cookies
     });
   }
+
   createTweet(content: string, image?: File): Observable<any> {
-    const token = localStorage.getItem('auth_token');  // Retrieve token from local storage
-    console.log("the token is: " + JSON.stringify(token));
-    const headers = new HttpHeaders({
-      'Authorization': `Token ${token}`
-    });
+
+    const headers = this.storeToLocalStorage()
 
     const formData = new FormData();
     formData.append('content', content);
@@ -67,7 +65,12 @@ export class GetApiService {
   }
 
   storeToLocalStorage() {
-
+    const token = localStorage.getItem('auth_token');  // Retrieve token from local storage
+    console.log("the token is: " + JSON.stringify(token));
+    const headers = new HttpHeaders({
+      'Authorization': `Token ${token}`
+    });
+    return headers;
   }
 
   storeTokenFromCookie() {

@@ -11,7 +11,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { MainWelcomeComponent } from './components/main-welcome/main-welcome.component';
 import { NotFoundPageComponent } from './components/not-found-page/not-found-page.component';
 import { TimeAgoPipe } from './pipes/time-ago.pipe';
-import { CreateTweetComponent } from './components/create-tweet/create-tweet.component';  // Import HttpClientModule
+import { CreateTweetComponent } from './components/create-tweet/create-tweet.component';
 
 @NgModule({
   declarations: [

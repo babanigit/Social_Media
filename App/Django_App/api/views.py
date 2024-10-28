@@ -17,22 +17,51 @@ def index(request):
 @csrf_exempt
 def get_user_info(request):
     if request.method == "GET":
-        # Attempt to retrieve the token from the cookie first
         token = request.COOKIES.get("auth_token")
-
-        # If no cookie is present, check the Authorization header for the token
         if not token:
             auth_header = request.headers.get("Authorization")
             if auth_header and auth_header.startswith("Token "):
-                token = auth_header.split(" ")[1]  # Extract the token part
+                token = auth_header.split(" ")[1]
             else:
                 return JsonResponse({"error": "Authentication required"}, status=401)
 
         try:
-            # Verify the user by matching the token
-            user = User.objects.get(token=token)
+            user = User.objects.annotate(
+                followers_count=Count("followers"), following_count=Count("following")
+            ).get(token=token)
 
-            # Return user information
+            # Pagination parameters
+            page = int(request.GET.get("page", 1))  # Default to page 1
+            per_page = 10  # Set to 10 tweets per page
+
+            # Fetch and paginate tweets
+            tweets = (
+                Tweet.objects.filter(user=user)
+                .annotate(
+                    like_count=Count("likes"),
+                    comment_count=Count("comments"),
+                    retweet_count=Count("retweets"),
+                )
+                .order_by("-created_at")
+            )
+            paginator = Paginator(tweets, per_page)
+            page_obj = paginator.get_page(page)
+
+            # Prepare paginated tweet data
+            tweets_data = [
+                {
+                    "id": tweet.id,
+                    "content": tweet.content,
+                    "image": tweet.image.url if tweet.image else None,
+                    "created_at": tweet.created_at,
+                    "likes_count": tweet.like_count,
+                    "comments_count": tweet.comment_count,
+                    "retweets_count": tweet.retweet_count,
+                }
+                for tweet in page_obj
+            ]
+
+            # Return user information, follower/following counts, and paginated tweets
             return JsonResponse(
                 {
                     "username": user.username,
@@ -41,6 +70,13 @@ def get_user_info(request):
                     "profile_image": (
                         user.profile_image.url if user.profile_image else None
                     ),
+                    "followers_count": user.followers_count,
+                    "following_count": user.following_count,
+                    "tweets": tweets_data,  # Include paginated tweets
+                    "total_pages": paginator.num_pages,
+                    "current_page": page,
+                    "has_next": page_obj.has_next(),
+                    "has_previous": page_obj.has_previous(),
                 },
                 status=200,
             )
@@ -237,8 +273,13 @@ def create_tweet(request):
 def update_tweet(request, tweet_id):
     if request.method in ["PUT", "PATCH"]:
         token = request.COOKIES.get("auth_token")
+        # If no cookie is present, check the Authorization header for the token
         if not token:
-            return JsonResponse({"error": "Authentication required"}, status=401)
+            auth_header = request.headers.get("Authorization")
+            if auth_header and auth_header.startswith("Token "):
+                token = auth_header.split(" ")[1]  # Extract the token part
+            else:
+                return JsonResponse({"error": "Authentication required"}, status=401)
 
         try:
             user = User.objects.get(token=token)
@@ -293,8 +334,13 @@ def update_tweet(request, tweet_id):
 def delete_tweet(request, tweet_id):
     if request.method == "DELETE":
         token = request.COOKIES.get("auth_token")
+        # If no cookie is present, check the Authorization header for the token
         if not token:
-            return JsonResponse({"error": "Authentication required"}, status=401)
+            auth_header = request.headers.get("Authorization")
+            if auth_header and auth_header.startswith("Token "):
+                token = auth_header.split(" ")[1]  # Extract the token part
+            else:
+                return JsonResponse({"error": "Authentication required"}, status=401)
 
         try:
             user = User.objects.get(token=token)
@@ -488,8 +534,13 @@ def get_tweets(request):
 def like_tweet(request, tweet_id):
     if request.method == "POST":
         token = request.COOKIES.get("auth_token")
+        # If no cookie is present, check the Authorization header for the token
         if not token:
-            return JsonResponse({"error": "Authentication required"}, status=401)
+            auth_header = request.headers.get("Authorization")
+            if auth_header and auth_header.startswith("Token "):
+                token = auth_header.split(" ")[1]  # Extract the token part
+            else:
+                return JsonResponse({"error": "Authentication required"}, status=401)
 
         try:
             user = User.objects.get(token=token)
@@ -522,8 +573,13 @@ def like_tweet(request, tweet_id):
 def comment_on_tweet(request, tweet_id):
     if request.method == "POST":
         token = request.COOKIES.get("auth_token")
+        # If no cookie is present, check the Authorization header for the token
         if not token:
-            return JsonResponse({"error": "Authentication required"}, status=401)
+            auth_header = request.headers.get("Authorization")
+            if auth_header and auth_header.startswith("Token "):
+                token = auth_header.split(" ")[1]  # Extract the token part
+            else:
+                return JsonResponse({"error": "Authentication required"}, status=401)
 
         try:
             user = User.objects.get(token=token)
@@ -596,8 +652,13 @@ def comment_on_tweet(request, tweet_id):
 def retweet(request, tweet_id):
     if request.method == "POST":
         token = request.COOKIES.get("auth_token")
+        # If no cookie is present, check the Authorization header for the token
         if not token:
-            return JsonResponse({"error": "Authentication required"}, status=401)
+            auth_header = request.headers.get("Authorization")
+            if auth_header and auth_header.startswith("Token "):
+                token = auth_header.split(" ")[1]  # Extract the token part
+            else:
+                return JsonResponse({"error": "Authentication required"}, status=401)
 
         try:
             user = User.objects.get(token=token)
@@ -635,8 +696,13 @@ def retweet(request, tweet_id):
 def follow_user(request, user_id):
     if request.method == "POST":
         token = request.COOKIES.get("auth_token")
+        # If no cookie is present, check the Authorization header for the token
         if not token:
-            return JsonResponse({"error": "Authentication required"}, status=401)
+            auth_header = request.headers.get("Authorization")
+            if auth_header and auth_header.startswith("Token "):
+                token = auth_header.split(" ")[1]  # Extract the token part
+            else:
+                return JsonResponse({"error": "Authentication required"}, status=401)
 
         try:
             current_user = User.objects.get(token=token)
@@ -720,8 +786,13 @@ def get_user_profile(request, username):
 def update_profile(request):
     if request.method in ["PUT", "PATCH"]:
         token = request.COOKIES.get("auth_token")
+        # If no cookie is present, check the Authorization header for the token
         if not token:
-            return JsonResponse({"error": "Authentication required"}, status=401)
+            auth_header = request.headers.get("Authorization")
+            if auth_header and auth_header.startswith("Token "):
+                token = auth_header.split(" ")[1]  # Extract the token part
+            else:
+                return JsonResponse({"error": "Authentication required"}, status=401)
 
         try:
             user = User.objects.get(token=token)
@@ -916,8 +987,13 @@ def search(request):
 def get_notifications(request):
     if request.method == "GET":
         token = request.COOKIES.get("auth_token")
+        # If no cookie is present, check the Authorization header for the token
         if not token:
-            return JsonResponse({"error": "Authentication required"}, status=401)
+            auth_header = request.headers.get("Authorization")
+            if auth_header and auth_header.startswith("Token "):
+                token = auth_header.split(" ")[1]  # Extract the token part
+            else:
+                return JsonResponse({"error": "Authentication required"}, status=401)
 
         try:
             user = User.objects.get(token=token)
