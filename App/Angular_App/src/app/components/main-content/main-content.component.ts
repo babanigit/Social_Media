@@ -30,7 +30,7 @@ export class MainContentComponent implements OnInit {
     this.tweetService.getTweets(page, 10, userId, followingOnly)
       .subscribe({
         next: (response: IGetTweets) => {
-          console.log("the get tweets are ", response  )
+          // console.log("the get tweets are ", response  )
           // this.image = response.tweets.
           this.tweets = response.tweets;  // Update to use tweets
           this.currentPage = response.current_page;

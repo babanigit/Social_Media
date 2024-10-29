@@ -10,12 +10,7 @@ import { ILoginResponse, IRegisterResponse } from '../models/RegAndLog';
 })
 export class GetApiService {
 
-  private apiUrl = 'http://localhost:8000/api'; // Replace with your Django API URL
-
-
-  private readonly getTweetsApi = 'http://127.0.0.1:8000/api/tweets/';
-  private readonly registerUrl = 'http://127.0.0.1:8000/api/register/';
-  private readonly loginUrl = 'http://127.0.0.1:8000/api/login/';
+  private apiUrl = 'http://localhost:8000/api/'; // Replace with your Django API URL
 
   constructor(private http: HttpClient) { }
 
@@ -37,16 +32,16 @@ export class GetApiService {
       params = params.set('following_only', 'true');
     }
 
-    return this.http.get<IGetTweets>(this.getTweetsApi, { params });
+    return this.http.get<IGetTweets>(this.apiUrl + 'tweets/', { params });
   }
 
   register(userData: FormData): Observable<IRegisterResponse> {
-    return this.http.post<IRegisterResponse>(this.registerUrl, userData);
+    return this.http.post<IRegisterResponse>(this.apiUrl + 'register/', userData);
   }
 
   login(username: string, password: string): Observable<ILoginResponse> {
     const loginData = { username, password };
-    return this.http.post<ILoginResponse>(this.loginUrl, loginData, {
+    return this.http.post<ILoginResponse>(this.apiUrl + 'login/', loginData, {
       withCredentials: true, // To handle cookies
     });
   }
@@ -61,7 +56,7 @@ export class GetApiService {
       formData.append('image', image, image.name);
     }
 
-    return this.http.post(`${this.apiUrl}/tweets/create/`, formData, { headers });
+    return this.http.post(this.apiUrl + 'tweets/create/', formData, { headers });
   }
 
   storeToLocalStorage() {
@@ -73,15 +68,15 @@ export class GetApiService {
     return headers;
   }
 
-  storeTokenFromCookie() {
-    const cookies = document.cookie.split('; ');
-    const authTokenCookie = cookies.find(row => row.startsWith('auth_token='));
+  // storeTokenFromCookie() {
+  //   const cookies = document.cookie.split('; ');
+  //   const authTokenCookie = cookies.find(row => row.startsWith('auth_token='));
 
-    if (authTokenCookie) {
-      console.log("stored on local host")
-      const token = authTokenCookie.split('=')[1];
-      localStorage.setItem('auth_token', token);
-    }
-  }
+  //   if (authTokenCookie) {
+  //     console.log("stored on local host")
+  //     const token = authTokenCookie.split('=')[1];
+  //     localStorage.setItem('auth_token', token);
+  //   }
+  // }
 
 }

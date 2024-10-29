@@ -20,7 +20,7 @@ export class CreateTweetComponent {
   }
 
   onSubmit() {
-    console.log( " the content is " + this.content );
+
     if (this.content) {
       this.tweetService.createTweet(this.content, this.selectedImage).subscribe(
         (response) => {
