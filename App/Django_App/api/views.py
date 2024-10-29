@@ -449,49 +449,54 @@ def get_Users_and_Tweets(request):
 def get_tweets(request):
     if request.method == "GET":
         try:
+            # Parse query parameters
             page = int(request.GET.get("page", 1))
             per_page = int(request.GET.get("per_page", 10))
             user_id = request.GET.get("user_id")
             following_only = request.GET.get("following_only") == "true"
 
-            # Start with tweets query with annotations
+            # Base tweet query with annotations
             tweets = (
                 Tweet.objects.annotate(
                     like_count=Count("likes"),
                     comment_count=Count("comments"),
                     retweet_count=Count("retweets"),
+                    user_followers_count=Count("user__followers"),
+                    user_following_count=Count("user__following"),
                 )
                 .select_related("user")
                 .order_by("-created_at")
             )
 
-            # Add user annotations to avoid N+1 queries
-            tweets = tweets.annotate(
-                user_followers_count=Count("user__followers"),
-                user_following_count=Count("user__following"),
-            )
-
-            # Filter tweets if needed
+            # Filter tweets by user if provided
             if user_id:
                 tweets = tweets.filter(user_id=user_id)
 
+            # Authentication and filtering for following_only
             token = request.COOKIES.get("auth_token")
-            if following_only and token:
+            current_user = None
+            if token:
                 try:
                     current_user = User.objects.get(token=token)
-                    following_ids = current_user.following.values_list("id", flat=True)
-                    tweets = tweets.filter(user_id__in=following_ids)
+                    if following_only:
+                        following_ids = current_user.following.values_list(
+                            "id", flat=True
+                        )
+                        tweets = tweets.filter(user_id__in=following_ids)
                 except User.DoesNotExist:
                     return JsonResponse(
                         {"error": "Invalid authentication token"}, status=401
                     )
 
-            # Paginate tweets
+            # Paginate the results
             paginator = Paginator(tweets, per_page)
             page_obj = paginator.get_page(page)
 
             tweets_data = []
             for tweet in page_obj:
+                # Check if the current user has liked each tweet
+                is_liked = current_user in tweet.likes.all() if current_user else False
+
                 tweet_data = {
                     "id": tweet.id,
                     "content": tweet.content,
@@ -500,6 +505,8 @@ def get_tweets(request):
                     "likes_count": tweet.like_count,
                     "comments_count": tweet.comment_count,
                     "retweets_count": tweet.retweet_count,
+                    "is_liked": is_liked,
+                    "liked_by_user_ids": list(tweet.likes.values_list("id", flat=True)),
                     "user": {
                         "id": tweet.user.id,
                         "username": tweet.user.username,
@@ -534,11 +541,10 @@ def get_tweets(request):
 def like_tweet(request, tweet_id):
     if request.method == "POST":
         token = request.COOKIES.get("auth_token")
-        # If no cookie is present, check the Authorization header for the token
         if not token:
             auth_header = request.headers.get("Authorization")
             if auth_header and auth_header.startswith("Token "):
-                token = auth_header.split(" ")[1]  # Extract the token part
+                token = auth_header.split(" ")[1]
             else:
                 return JsonResponse({"error": "Authentication required"}, status=401)
 
@@ -557,6 +563,7 @@ def like_tweet(request, tweet_id):
                 {
                     "message": f"Tweet {action} successfully",
                     "likes_count": tweet.likes.count(),
+                    "liked_by_user_ids": list(tweet.likes.values_list("id", flat=True)),
                 },
                 status=200,
             )

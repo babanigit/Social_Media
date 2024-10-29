@@ -17,7 +17,7 @@ export class MainContentComponent implements OnInit {
   error: string | null = null;
   image: any;  // Add a new property to store the user's profile image
 
-  constructor(private tweetService: GetApiService) {}
+  constructor(private tweetService: GetApiService) { }
 
   ngOnInit(): void {
     this.loadTweets();
@@ -61,5 +61,13 @@ export class MainContentComponent implements OnInit {
 
   toggleFollowingOnly(): void {
     this.loadTweets(1, undefined, true);
+  }
+
+  getLikeFun(idNum: number) {
+    this.tweetService.likeTweet(idNum).subscribe((response) => {
+      console.log("Like tweet response ", response);
+      this.loadTweets(); // You can update the tweets array here as well if you want to reflect the like count immediately.
+    })
+
   }
 }
