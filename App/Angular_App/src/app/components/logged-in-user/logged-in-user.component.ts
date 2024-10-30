@@ -1,6 +1,7 @@
 import { GetApiService } from './../../services/get-api.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { ILoggedInUser } from '../../models/LoggedInUser';
 
 interface UserInfo {
   username: string;
@@ -30,8 +31,9 @@ interface UserInfo {
   styleUrls: ['./logged-in-user.component.css']
 })
 export class LoggedInUserComponent implements OnInit {
+  @Output() userData = new EventEmitter<ILoggedInUser>();
 
-  user: any;
+  user: ILoggedInUser | undefined;
   loading = true;
   error: string | null = null;
 
@@ -53,6 +55,7 @@ export class LoggedInUserComponent implements OnInit {
       next: (data) => {
         this.user = data;
         this.loading = false;
+        this.userData.emit(this.user);
       },
       error: (err) => {
         this.error = 'Failed to load user data. Please try again later.';

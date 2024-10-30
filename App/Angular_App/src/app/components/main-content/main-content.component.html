@@ -1,11 +1,7 @@
-
-
-<app-logged-in-user />
+<app-logged-in-user (userData)="reciveUserData($event)" />
 <app-register />
 <app-login />
-<app-create-tweet
-(tweetCreated)="loadTweets()"
-/>
+<app-create-tweet (tweetCreated)="loadTweets()" />
 
 
 <section>
@@ -33,13 +29,9 @@
                       <div class="flex items-start space-x-3">
                         <a class="contents" href="/u/andresbriceno"><img alt="0xf6b0"
                             class="size-11 z-[1] cursor-pointer rounded-full border bg-gray-200 dark:border-gray-700"
-                            height="44" loading="lazy"
+                            height="44" loading="lazy" [src]=" 'http://127.0.0.1:8000' + data.user.profile_image " />
 
-                            [src]=" 'http://127.0.0.1:8000' + data.user.profile_image "
-
-                            />
-
-                          </a>
+                        </a>
                         <div class="w-[calc(100%-55px)]">
                           <div class="flex w-full items-start justify-between">
                             <div class="flex max-w-sm flex-wrap items-center">
@@ -164,6 +156,14 @@
                               </div>
 
                               <!-- likes -->
+
+                              <ng-container *ngIf="user">
+                                <div *ngIf="data.liked_by_user_ids.includes(user.id)">
+                                  liked
+                                </div>
+                              </ng-container>
+
+
                               <div class="ld-text-gray-500 flex items-center space-x-1">
                                 <button (click)="getLikeFun(data.id)" aria-label="Like"
                                   class="  hover:bg-gray-300/20 rounded-full p-1.5 outline-offset-2" type="button">

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { IGetTweets, ITweet } from '../../models/GetTweets';
 import { GetApiService } from '../../services/get-api.service';
+import { ILoggedInUser } from '../../models/LoggedInUser';
 
 @Component({
   selector: 'app-main-content',
@@ -16,6 +17,13 @@ export class MainContentComponent implements OnInit {
   loading = false;
   error: string | null = null;
   image: any;  // Add a new property to store the user's profile image
+
+  user: ILoggedInUser | undefined
+
+  reciveUserData(str: ILoggedInUser) {
+    this.user = str;
+    console.log("the user is ", this.user)
+  }
 
   constructor(private tweetService: GetApiService) { }
 
