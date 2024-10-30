@@ -7,19 +7,20 @@ export interface IGetTweets {
 }
 
 export interface ITweet {
-  id: number;
-  content: string;
-  image: string | undefined;
-  created_at: string;
-  likes_count: number;
-  comments_count: number;
-  retweets_count: number;
-  user: IUser;
-  // likedByUser: boolean; // Added likedByUser property
+  id: string
+  content: string
+  image: any
+  created_at: string
+  likes_count: number
+  comments_count: number
+  retweets_count: number
+  is_liked: boolean
+  liked_by_user_ids: string[]
+  user: IUser
 }
 
 export interface IUser {
-  id: number;
+  id: string;
   username: string;
   name: string;
   profile_image?: string;

@@ -1,3 +1,4 @@
+import { GetApiService } from './../../services/get-api.service';
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
@@ -29,33 +30,36 @@ interface UserInfo {
   styleUrls: ['./logged-in-user.component.css']
 })
 export class LoggedInUserComponent implements OnInit {
-  userInfo: UserInfo | null = null;
-  currentPage: number = 1;
 
-  constructor(private http: HttpClient) {}
+  user: any;
+  loading = true;
+  error: string | null = null;
+
+  constructor(private getApiService: GetApiService) {}
 
   ngOnInit(): void {
-    this.loadUserInfo(this.currentPage);
-  }
 
-  loadUserInfo(page: number): void {
-    this.http.get("http://127.0.0.1:8000/api/user?page=1", { withCredentials: true })
-    .subscribe(
-        (response) => console.log("User info:", response),
-        (error) => console.error("Error fetching user info", error)
-    );
 
-  }
-
-  loadPreviousPage(): void {
-    if (this.userInfo && this.userInfo.has_previous) {
-      this.loadUserInfo(this.currentPage - 1);
+    const token = this.getApiService.getTokenFromCookieOrLocalStorage();
+    if (!token) {
+      console.error('Authorization token missing');
+      // Handle redirection to login or display a message
+      return;
     }
+    console.log('Authentication token - ', token);
+
+
+    this.getApiService.getLoggedInUser().subscribe({
+      next: (data) => {
+        this.user = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Failed to load user data. Please try again later.';
+        this.loading = false;
+        console.error('Error loading user data:', err);
+      }
+    });
   }
 
-  loadNextPage(): void {
-    if (this.userInfo && this.userInfo.has_next) {
-      this.loadUserInfo(this.currentPage + 1);
-    }
-  }
 }

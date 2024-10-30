@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 import { IGetTweets } from '../models/GetTweets';
 import { ILoginResponse, IRegisterResponse } from '../models/RegAndLog';
+import { ILoggedInUser } from '../models/LoggedInUser';
 
 
 @Injectable({
@@ -48,8 +49,6 @@ export class GetApiService {
     }
   }
 
-
-
   register(userData: FormData): Observable<IRegisterResponse> {
     return this.http.post<IRegisterResponse>(this.apiUrl + 'register/', userData);
   }
@@ -59,6 +58,34 @@ export class GetApiService {
     return this.http.post<ILoginResponse>(this.apiUrl + 'login/', loginData, {
       withCredentials: true, // To handle cookies
     });
+  }
+
+  getLoggedInUser(page: number = 1): Observable<ILoggedInUser> {
+    // Retrieve the auth token from cookies or local storage
+    const token = this.getTokenFromCookieOrLocalStorage();
+
+    // Check if the token is available
+    if (!token) {
+      console.error('Authorization token missing');
+      return throwError('Authorization token missing');
+    }
+
+    // Set the Authorization header
+    const headers = new HttpHeaders({
+      'Authorization': `Token ${token}`
+    });
+
+    // Create query parameters for pagination
+    const params = new HttpParams().set('page', page.toString());
+
+    // Make the GET request to fetch the logged-in user data
+    return this.http.get<ILoggedInUser>(this.apiUrl + 'user/', { headers, params })
+      .pipe(
+        catchError((error) => {
+          console.error('Error loading user data:', error);
+          return throwError('Error loading user data'); // Propagate the error
+        })
+      );
   }
 
   getTweets(
@@ -105,7 +132,7 @@ export class GetApiService {
     return this.http.post(this.apiUrl + 'tweets/create/', formData, { headers });
   }
 
-  likeTweet(tweetId: number): Observable<any> {
+  likeTweet(tweetId: string): Observable<any> {
     const token = this.getTokenFromCookieOrLocalStorage();
 
     if (!token) {

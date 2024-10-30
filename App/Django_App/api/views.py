@@ -9,13 +9,51 @@ from .models import User, Tweet, Comment, Retweet
 from django.contrib.auth.hashers import check_password
 from django.core.files.storage import default_storage
 
+from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.views.decorators.http import require_http_methods
+
+
+def get_authenticated_user(request):
+    """Helper function to get authenticated user from token"""
+    token = request.COOKIES.get("auth_token") or request.headers.get(
+        "Authorization", ""
+    ).replace("Token ", "")
+    if not token:
+        raise ValidationError("Authentication required")
+
+    try:
+        return User.objects.get(token=token)
+    except User.DoesNotExist:
+        raise ValidationError("Invalid token")
+
+
+def paginate_queryset(queryset, request):
+    """Helper function to handle pagination"""
+    try:
+        page = int(request.GET.get("page", 1))
+        per_page = min(int(request.GET.get("per_page", 10)), settings.MAX_PAGE_SIZE)
+    except ValueError:
+        raise ValidationError("Invalid pagination parameters")
+
+    paginator = Paginator(queryset, per_page)
+    page_obj = paginator.get_page(page)
+
+    return {
+        "items": page_obj,
+        "total_pages": paginator.num_pages,
+        "current_page": page,
+        "has_next": page_obj.has_next(),
+        "has_previous": page_obj.has_previous(),
+    }
+
 
 def index(request):
     return JsonResponse({"message": "Twitter Clone API is running"})
 
 
 @csrf_exempt
-def get_user_info(request):
+def get_loggedIn_user(request):
     if request.method == "GET":
         token = request.COOKIES.get("auth_token")
         if not token:
@@ -50,7 +88,7 @@ def get_user_info(request):
             # Prepare paginated tweet data
             tweets_data = [
                 {
-                    "id": tweet.id,
+                    "id": str(tweet.id),
                     "content": tweet.content,
                     "image": tweet.image.url if tweet.image else None,
                     "created_at": tweet.created_at,
@@ -64,6 +102,7 @@ def get_user_info(request):
             # Return user information, follower/following counts, and paginated tweets
             return JsonResponse(
                 {
+                    "id": str(user.id),
                     "username": user.username,
                     "email": user.email,
                     "bio": user.bio,
@@ -72,6 +111,7 @@ def get_user_info(request):
                     ),
                     "followers_count": user.followers_count,
                     "following_count": user.following_count,
+                    "date_joined": user.date_joined.isoformat(),  # Add the created date
                     "tweets": tweets_data,  # Include paginated tweets
                     "total_pages": paginator.num_pages,
                     "current_page": page,
@@ -211,20 +251,10 @@ def logout(request):
 @csrf_exempt
 def create_tweet(request):
     if request.method == "POST":
-        # Attempt to retrieve the token from the cookie first
-        token = request.COOKIES.get("auth_token")
-
-        # If no cookie is present, check the Authorization header for the token
-        if not token:
-            auth_header = request.headers.get("Authorization")
-            if auth_header and auth_header.startswith("Token "):
-                token = auth_header.split(" ")[1]  # Extract the token part
-            else:
-                return JsonResponse({"error": "Authentication required"}, status=401)
 
         try:
             # Verify the user by matching the token
-            user = User.objects.get(token=token)
+            user= get_authenticated_user(request)
 
             # Check content type and parse the data accordingly
             if request.content_type == "application/json":
@@ -253,7 +283,7 @@ def create_tweet(request):
             return JsonResponse(
                 {
                     "message": "Tweet created successfully",
-                    "tweet_id": tweet.id,
+                    "tweet_id": (tweet.id),
                     "content": tweet.content,
                     "image": tweet.image.url if tweet.image else None,
                     "created_at": tweet.created_at,
@@ -306,7 +336,7 @@ def update_tweet(request, tweet_id):
             return JsonResponse(
                 {
                     "message": "Tweet updated successfully",
-                    "tweet_id": tweet.id,
+                    "tweet_id": str(tweet.id),
                     "content": tweet.content,
                     "updated_at": tweet.updated_at,
                 },
@@ -408,7 +438,7 @@ def get_Users_and_Tweets(request):
                 )
 
                 user_data = {
-                    "id": user.id,
+                    "id": str(user.id),
                     "username": user.username,
                     "name": user.name,
                     "profile_image": (
@@ -418,7 +448,7 @@ def get_Users_and_Tweets(request):
                     "following_count": user.following_count,
                     "tweets": [
                         {
-                            "id": tweet.id,
+                            "id": str(tweet.id),
                             "content": tweet.content,
                             "image": tweet.image.url if tweet.image else None,
                             "created_at": tweet.created_at,
@@ -447,6 +477,7 @@ def get_Users_and_Tweets(request):
 
 
 def get_tweets(request):
+
     if request.method == "GET":
         try:
             # Parse query parameters
@@ -498,7 +529,7 @@ def get_tweets(request):
                 is_liked = current_user in tweet.likes.all() if current_user else False
 
                 tweet_data = {
-                    "id": tweet.id,
+                    "id": str(tweet.id),  # Convert UUID to string
                     "content": tweet.content,
                     "image": tweet.image.url if tweet.image else None,
                     "created_at": tweet.created_at,
@@ -506,9 +537,12 @@ def get_tweets(request):
                     "comments_count": tweet.comment_count,
                     "retweets_count": tweet.retweet_count,
                     "is_liked": is_liked,
-                    "liked_by_user_ids": list(tweet.likes.values_list("id", flat=True)),
+                    "liked_by_user_ids": [
+                        str(user_id)
+                        for user_id in tweet.likes.values_list("id", flat=True)
+                    ],  # Convert liked user IDs to strings
                     "user": {
-                        "id": tweet.user.id,
+                        "id": str(tweet.user.id),  # Convert user UUID to string
                         "username": tweet.user.username,
                         "name": tweet.user.name,
                         "profile_image": (
@@ -633,7 +667,7 @@ def comment_on_tweet(request, tweet_id):
                     "content": comment.content,
                     "created_at": comment.created_at,
                     "user": {
-                        "id": comment.user.id,
+                        "id": comment.str(user.id),
                         "username": comment.user.username,
                         "profile_image": (
                             comment.user.profile_image.url
@@ -759,13 +793,13 @@ def get_user_profile(request, username):
                     current_user = User.objects.get(
                         token=request.COOKIES.get("auth_token")
                     )
-                    is_following = current_user.following.filter(id=user.id).exists()
+                    is_following = current_user.following.filter(id=str(user.id)).exists()
                 except User.DoesNotExist:
                     pass
 
             return JsonResponse(
                 {
-                    "id": user.id,
+                    "id": str(user.id),
                     "username": user.username,
                     "email": user.email,
                     "bio": user.bio,
@@ -865,7 +899,7 @@ def get_user_tweets(request, username):
 
             tweets_data = [
                 {
-                    "id": tweet.id,
+                    "id": str(tweet.id),
                     "content": tweet.content,
                     "image": tweet.image.url if tweet.image else None,
                     "created_at": tweet.created_at,
@@ -923,12 +957,12 @@ def search(request):
                 tweets_data = [
                     {
                         "type": "tweet",
-                        "id": tweet.id,
+                        "id": str(tweet.id),
                         "content": tweet.content,
                         "image": tweet.image.url if tweet.image else None,
                         "created_at": tweet.created_at,
                         "user": {
-                            "id": tweet.user.id,
+                            "id": str(tweet.user.id),
                             "username": tweet.user.username,
                             "profile_image": (
                                 tweet.user.profile_image.url
@@ -956,7 +990,7 @@ def search(request):
                 users_data = [
                     {
                         "type": "user",
-                        "id": user.id,
+                        "id": str(user.id),
                         "username": user.username,
                         "bio": user.bio,
                         "profile_image": (
@@ -1033,7 +1067,7 @@ def get_notifications(request):
                             {
                                 "type": "like",
                                 "user": like_user.username,
-                                "tweet_id": tweet.id,
+                                "tweet_id": str(tweet.id),
                                 "created_at": tweet.created_at,
                             }
                         )
@@ -1045,7 +1079,7 @@ def get_notifications(request):
                         {
                             "type": "comment",
                             "user": comment.user.username,
-                            "tweet_id": comment.tweet.id,
+                            "tweet_id": comment.str(tweet.id),
                             "comment_id": comment.id,
                             "created_at": comment.created_at,
                         }
@@ -1058,7 +1092,7 @@ def get_notifications(request):
                         {
                             "type": "retweet",
                             "user": retweet.user.username,
-                            "tweet_id": retweet.original_tweet.id,
+                            "tweet_id": retweet.original_str(tweet.id),
                             "created_at": retweet.created_at,
                         }
                     )

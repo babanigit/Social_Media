@@ -1,7 +1,7 @@
 // src/app/interfaces/tweet.interface.ts
 
 export interface ITweet {
-  id: number;
+  id: string;
   content: string;
   image: string | null;
   created_at: string;
@@ -11,7 +11,7 @@ export interface ITweet {
 }
 
 export interface IUser {
-  id: number;
+  id: string;
   username: string;
   name:string;
   profile_image: string | null;

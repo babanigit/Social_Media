@@ -1,9 +1,11 @@
 
 
-<!-- <app-logged-in-user /> -->
+<app-logged-in-user />
 <app-register />
 <app-login />
-<app-create-tweet />
+<app-create-tweet
+(tweetCreated)="loadTweets()"
+/>
 
 
 <section>
@@ -164,7 +166,7 @@
                               <!-- likes -->
                               <div class="ld-text-gray-500 flex items-center space-x-1">
                                 <button (click)="getLikeFun(data.id)" aria-label="Like"
-                                  class="hover:bg-gray-300/20 rounded-full p-1.5 outline-offset-2" type="button">
+                                  class="  hover:bg-gray-300/20 rounded-full p-1.5 outline-offset-2" type="button">
                                   <span class="" data-state="closed"><svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                       viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"
                                       data-slot="icon" class="w-[15px] sm:w-[18px]">

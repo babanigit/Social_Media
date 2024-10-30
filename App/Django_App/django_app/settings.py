@@ -54,6 +54,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# settings.py
+MAX_TWEET_LENGTH = 280  # or your desired length
+MAX_UPLOAD_SIZE = 5 * 1024 * 1024  # 5MB or your desired size
+MAX_PAGE_SIZE = 100  # maximum items per page
+
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (

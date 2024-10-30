@@ -63,7 +63,7 @@ export class MainContentComponent implements OnInit {
     this.loadTweets(1, undefined, true);
   }
 
-  getLikeFun(idNum: number) {
+  getLikeFun(idNum: string) {
     this.tweetService.likeTweet(idNum).subscribe((response) => {
       console.log("Like tweet response ", response);
       this.loadTweets(); // You can update the tweets array here as well if you want to reflect the like count immediately.

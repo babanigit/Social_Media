@@ -1,25 +1,16 @@
-<div *ngIf="userInfo">
-  <div class="user-info">
-    <img *ngIf="userInfo.profile_image" [src]="userInfo.profile_image" alt="{{ userInfo.username }}" width="100" />
-    <h2>{{ userInfo.username }}</h2>
-    <p>Email: {{ userInfo.email }}</p>
-    <p>Bio: {{ userInfo.bio }}</p>
-    <p>Followers: {{ userInfo.followers_count }} | Following: {{ userInfo.following_count }}</p>
-  </div>
+<!-- user-profile.component.html -->
+<div *ngIf="loading">Loading...</div>
+<div *ngIf="error">{{ error }}</div>
+<div *ngIf="user">
+  <img *ngIf="user.profile_image" [src]="user.profile_image" alt="{{ user.username }}'s profile image">
+  <h1>{{ user.username }}</h1>
+  <p>{{ user.bio }}</p>
+  <p>Followers: {{ user.followers_count }}</p>
+  <p>Following: {{ user.following_count }}</p>
 
-  <div class="tweets">
-    <h3>User Tweets</h3>
-    <div *ngFor="let tweet of userInfo.tweets" class="tweet">
-      <p>{{ tweet.content }}</p>
-      <img *ngIf="tweet.image" [src]="tweet.image" alt="Tweet image" width="100" />
-      <p>Likes: {{ tweet.likes_count }}, Comments: {{ tweet.comments_count }}, Retweets: {{ tweet.retweets_count }}</p>
-      <p>Posted at: {{ tweet.created_at }}</p>
-    </div>
-  </div>
-
-  <div class="pagination">
-    <button (click)="loadPreviousPage()" [disabled]="!userInfo.has_previous">Previous</button>
-    <span>Page {{ currentPage }} of {{ userInfo.total_pages }}</span>
-    <button (click)="loadNextPage()" [disabled]="!userInfo.has_next">Next</button>
+  <h2>Tweets</h2>
+  <div *ngFor="let tweet of user.tweets">
+    <p>{{ tweet.content }}</p>
+    <small>{{ tweet.created_at | date }}</small>
   </div>
 </div>
