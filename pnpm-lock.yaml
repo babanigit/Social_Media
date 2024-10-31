@@ -97,6 +97,8 @@ importers:
         specifier: ~5.5.2
         version: 5.5.4
 
+  App/Django_App: {}
+
 packages:
 
   '@ampproject/remapping@2.3.0':

@@ -23,6 +23,7 @@
 
                   <!-- {{data | json}} -->
 
+
                   <div data-index="4" data-known-size="228" data-item-index="4" style="overflow-anchor: none">
                     <article class="cursor-pointer px-5 pt-4 pb-3 hover:bg-gray-100 dark:hover:bg-gray-900">
                       <span></span>
@@ -156,16 +157,9 @@
                               </div>
 
                               <!-- likes -->
-
-                              <ng-container *ngIf="user">
-                                <div *ngIf="data.liked_by_user_ids.includes(user.id)">
-                                  liked
-                                </div>
-                              </ng-container>
-
-
                               <div class="ld-text-gray-500 flex items-center space-x-1">
-                                <button (click)="getLikeFun(data.id)" aria-label="Like"
+                                <button [ngClass]="{'bg-red-500 text-white': data.liked_by_user_ids.includes(user!.id)}"
+                                  (click)="getLikeFun(data.id)" aria-label="Like"
                                   class="  hover:bg-gray-300/20 rounded-full p-1.5 outline-offset-2" type="button">
                                   <span class="" data-state="closed"><svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                       viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"
