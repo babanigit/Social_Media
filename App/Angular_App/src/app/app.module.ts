@@ -3,15 +3,10 @@ import { BrowserModule, provideClientHydration } from '@angular/platform-browser
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { NavbarComponent } from './components/navbar/navbar.component';
 import { NavbarModule } from './components/navbar/navbar.module';
-// import { Demo1Module } from './components/demos/demo1/demo1.module';
 import { GetApiService } from './services/get-api.service';
 import { HttpClientModule } from '@angular/common/http';
-import { MainWelcomeComponent } from './components/main-welcome/main-welcome.component';
-import { NotFoundPageComponent } from './components/not-found-page/not-found-page.component';
-import { TimeAgoPipe } from './pipes/time-ago.pipe';
-import { CreateTweetComponent } from './components/create-tweet/create-tweet.component';
+
 
 @NgModule({
   declarations: [
@@ -21,14 +16,12 @@ import { CreateTweetComponent } from './components/create-tweet/create-tweet.com
     BrowserModule,
     AppRoutingModule,
     NavbarModule,
-    // Demo1Module,
     HttpClientModule,
 
   ],
   providers: [
     provideClientHydration(),
     GetApiService,
-
 
   ],
   bootstrap: [AppComponent]

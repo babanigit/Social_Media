@@ -6,6 +6,7 @@ import { RegisterModule } from "../register/register.module";
 import { LoginModule } from '../login/login.module';
 import { CreateTweetModule } from "../create-tweet/create-tweet.module";
 import { LoggedInUserModule } from '../logged-in-user/logged-in-user.module';
+import { OpenCommentsModule } from '../open-comments/open-comments.module';
 
 
 
@@ -20,7 +21,8 @@ import { LoggedInUserModule } from '../logged-in-user/logged-in-user.module';
     RegisterModule,
     LoginModule,
     CreateTweetModule,
-    LoggedInUserModule
+    LoggedInUserModule,
+    OpenCommentsModule
   ],
   exports: [MainContentComponent]
 })

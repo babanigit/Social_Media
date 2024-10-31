@@ -254,7 +254,7 @@ def create_tweet(request):
 
         try:
             # Verify the user by matching the token
-            user= get_authenticated_user(request)
+            user = get_authenticated_user(request)
 
             # Check content type and parse the data accordingly
             if request.content_type == "application/json":
@@ -793,7 +793,9 @@ def get_user_profile(request, username):
                     current_user = User.objects.get(
                         token=request.COOKIES.get("auth_token")
                     )
-                    is_following = current_user.following.filter(id=str(user.id)).exists()
+                    is_following = current_user.following.filter(
+                        id=str(user.id)
+                    ).exists()
                 except User.DoesNotExist:
                     pass
 
