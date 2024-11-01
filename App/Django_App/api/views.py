@@ -528,6 +528,18 @@ def get_tweets(request):
                 # Check if the current user has liked each tweet
                 is_liked = current_user in tweet.likes.all() if current_user else False
 
+                # Fetch comments for each tweet
+                comments_data = [
+                    {
+                        "id": str(comment.id),
+                        "content": comment.content,
+                        "created_at": comment.created_at,
+                        "user_id": str(comment.user.id),
+                        "username": comment.user.username,
+                    }
+                    for comment in tweet.comments.all()
+                ]
+
                 tweet_data = {
                     "id": str(tweet.id),  # Convert UUID to string
                     "content": tweet.content,
@@ -541,6 +553,7 @@ def get_tweets(request):
                         str(user_id)
                         for user_id in tweet.likes.values_list("id", flat=True)
                     ],  # Convert liked user IDs to strings
+                    "comments": comments_data,  # Include comments data
                     "user": {
                         "id": str(tweet.user.id),  # Convert user UUID to string
                         "username": tweet.user.username,
@@ -668,6 +681,41 @@ def comment_on_tweet(request, tweet_id):
                     "created_at": comment.created_at,
                     "user": {
                         "id": comment.str(user.id),
+                        "username": comment.user.username,
+                        "profile_image": (
+                            comment.user.profile_image.url
+                            if comment.user.profile_image
+                            else None
+                        ),
+                    },
+                }
+                for comment in comments
+            ]
+
+            return JsonResponse({"comments": comments_data}, status=200)
+
+        except Tweet.DoesNotExist:
+            return JsonResponse({"error": "Tweet not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Method not allowed"}, status=405)
+
+
+@csrf_exempt
+def get_tweet_comments(request, tweet_id):
+    if request.method == "GET":
+        try:
+            tweet = Tweet.objects.get(id=tweet_id)
+            comments = Comment.objects.filter(tweet=tweet).select_related("user")
+
+            comments_data = [
+                {
+                    "id": str(comment.id),
+                    "content": comment.content,
+                    "created_at": comment.created_at,
+                    "user": {
+                        "id": str(comment.user.id),
                         "username": comment.user.username,
                         "profile_image": (
                             comment.user.profile_image.url

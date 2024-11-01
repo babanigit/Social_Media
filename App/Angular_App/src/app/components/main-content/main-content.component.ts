@@ -78,4 +78,9 @@ export class MainContentComponent implements OnInit {
     })
 
   }
+
+  getComments(){
+
+  }
+
 }
