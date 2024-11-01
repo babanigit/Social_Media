@@ -60,7 +60,9 @@ class Comment(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+    likes = models.ManyToManyField(User, related_name="liked_comments", blank=True)
+    dislikes = models.ManyToManyField(User, related_name="disliked_comments", blank=True)  # New field for dislikes
+
     def __str__(self):
         return f"Comment by {self.user.username}: {self.content[:20]}"
 

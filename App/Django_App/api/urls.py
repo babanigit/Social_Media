@@ -21,6 +21,11 @@ urlpatterns = [
     # Comment operations
     path('tweets/<str:tweet_id>/comments/', views.comment_on_tweet, name='comment_on_tweet'),
     path('tweets/<str:tweet_id>/getComments/', views.get_tweet_comments, name='get_tweet_comments'),
+    
+    path('tweets/<str:comment_id>/likeComment/', views.like_comment, name='like_comment'),
+    path('tweets/<str:comment_id>/dislikeComments/', views.dislike_comment, name='dislike_comment'),
+
+
 
     # User operations
     path('users/', views.get_Users_and_Tweets , name='get_user_and_tweets'),

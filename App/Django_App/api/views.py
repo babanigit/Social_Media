@@ -723,6 +723,16 @@ def get_tweet_comments(request, tweet_id):
                             else None
                         ),
                     },
+                    "likes_count": comment.likes.count(),
+                    "liked_by_user_ids": [
+                        str(user_id)
+                        for user_id in comment.likes.values_list("id", flat=True)
+                    ],
+                    "dislikes_count": comment.dislikes.count(),  # Total dislikes for the comment
+                    "disliked_by_user_ids": [
+                        str(user_id)
+                        for user_id in comment.dislikes.values_list("id", flat=True)
+                    ],  # List of user IDs who disliked the comment
                 }
                 for comment in comments
             ]
@@ -731,6 +741,98 @@ def get_tweet_comments(request, tweet_id):
 
         except Tweet.DoesNotExist:
             return JsonResponse({"error": "Tweet not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Method not allowed"}, status=405)
+
+
+@csrf_exempt
+def like_comment(request, comment_id):
+    if request.method == "POST":
+        token = request.COOKIES.get("auth_token")
+        if not token:
+            auth_header = request.headers.get("Authorization")
+            if auth_header and auth_header.startswith("Token "):
+                token = auth_header.split(" ")[1]
+            else:
+                return JsonResponse({"error": "Authentication required"}, status=401)
+
+        try:
+            user = User.objects.get(token=token)
+            comment = Comment.objects.get(id=comment_id)
+
+            # Remove dislike if user had previously disliked the comment
+            if user in comment.dislikes.all():
+                comment.dislikes.remove(user)
+
+            # Toggle like status
+            if user in comment.likes.all():
+                comment.likes.remove(user)
+                action = "unliked"
+            else:
+                comment.likes.add(user)
+                action = "liked"
+
+            return JsonResponse(
+                {
+                    "message": f"Comment {action} successfully",
+                    "likes_count": comment.likes.count(),
+                    "liked_by_user_ids": list(comment.likes.values_list("id", flat=True)),
+                    "dislikes_count": comment.dislikes.count(),
+                    "disliked_by_user_ids": list(comment.dislikes.values_list("id", flat=True)),
+                },
+                status=200,
+            )
+
+        except Comment.DoesNotExist:
+            return JsonResponse({"error": "Comment not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Method not allowed"}, status=405)
+
+
+@csrf_exempt
+def dislike_comment(request, comment_id):
+    if request.method == "POST":
+        token = request.COOKIES.get("auth_token")
+        if not token:
+            auth_header = request.headers.get("Authorization")
+            if auth_header and auth_header.startswith("Token "):
+                token = auth_header.split(" ")[1]
+            else:
+                return JsonResponse({"error": "Authentication required"}, status=401)
+
+        try:
+            user = User.objects.get(token=token)
+            comment = Comment.objects.get(id=comment_id)
+
+            # Remove like if user had previously liked the comment
+            if user in comment.likes.all():
+                comment.likes.remove(user)
+
+            # Toggle dislike status
+            if user in comment.dislikes.all():
+                comment.dislikes.remove(user)
+                action = "undisliked"
+            else:
+                comment.dislikes.add(user)
+                action = "disliked"
+
+            return JsonResponse(
+                {
+                    "message": f"Comment {action} successfully",
+                    "likes_count": comment.likes.count(),
+                    "liked_by_user_ids": list(comment.likes.values_list("id", flat=True)),
+                    "dislikes_count": comment.dislikes.count(),
+                    "disliked_by_user_ids": list(comment.dislikes.values_list("id", flat=True)),
+                },
+                status=200,
+            )
+
+        except Comment.DoesNotExist:
+            return JsonResponse({"error": "Comment not found"}, status=404)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
 

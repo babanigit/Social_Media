@@ -14,9 +14,9 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 })
 export class GetApiService {
 
-  private apiUrl = 'http://localhost:8000/api/'; // Replace with your Django API URL
+  private apiUrl = 'http://localhost:8000/api'; // Replace with your Django API URL
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object, private http: HttpClient) {}
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private http: HttpClient) { }
 
   getTokenFromCookieOrLocalStorage(): string | null {
     // Check if we are running in the browser
@@ -52,15 +52,13 @@ export class GetApiService {
     return null;
   }
 
-
-
   register(userData: FormData): Observable<IRegisterResponse> {
-    return this.http.post<IRegisterResponse>(this.apiUrl + 'register/', userData);
+    return this.http.post<IRegisterResponse>(this.apiUrl + '/register/', userData);
   }
 
   login(username: string, password: string): Observable<ILoginResponse> {
     const loginData = { username, password };
-    return this.http.post<ILoginResponse>(this.apiUrl + 'login/', loginData, {
+    return this.http.post<ILoginResponse>(this.apiUrl + '/login/', loginData, {
       withCredentials: true, // To handle cookies
     });
   }
@@ -111,9 +109,8 @@ export class GetApiService {
       params = params.set('following_only', 'true');
     }
 
-    return this.http.get<IGetTweets>(this.apiUrl + 'tweets/', { params });
+    return this.http.get<IGetTweets>(this.apiUrl + '/tweets/', { params });
   }
-
 
   createTweet(content: string, image?: File): Observable<any> {
 
@@ -134,7 +131,7 @@ export class GetApiService {
       'Authorization': `Token ${token}`
     });
 
-    return this.http.post(this.apiUrl + 'tweets/create/', formData, { headers });
+    return this.http.post(this.apiUrl + '/tweets/create/', formData, { headers });
   }
 
   likeTweet(tweetId: string): Observable<any> {
@@ -149,12 +146,13 @@ export class GetApiService {
       'Authorization': `Token ${token}`
     });
 
-    return this.http.post(`${this.apiUrl}tweets/${tweetId}/like/`, null, { headers });
+    return this.http.post(`${this.apiUrl}/tweets/${tweetId}/like/`, null, { headers });
   }
 
-
-
-
+  getTweetComments(tweetId: string): Observable<any> {
+    const url = `${this.apiUrl}/tweets/${tweetId}/getComments/`;
+    return this.http.get(url);
+  }
 
   // storeTokenFromCookie() {
   //   const cookies = document.cookie.split('; ');
