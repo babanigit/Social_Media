@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { IGetTweets, ITweet } from '../../models/GetTweets';
 import { GetApiService } from '../../services/get-api.service';
 import { ILoggedInUser } from '../../models/LoggedInUser';
+import { DOCUMENT } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-main-content',
@@ -9,6 +11,7 @@ import { ILoggedInUser } from '../../models/LoggedInUser';
   styleUrl: './main-content.component.css'
 })
 export class MainContentComponent implements OnInit {
+
   tweets: ITweet[] = [];  // Now it's an array of tweets
   currentPage = 1;
   totalPages = 1;
@@ -25,10 +28,16 @@ export class MainContentComponent implements OnInit {
     console.log("the user is ", this.user)
   }
 
-  constructor(private tweetService: GetApiService) { }
+  constructor(private tweetService: GetApiService,
+    @Inject(DOCUMENT) private document: Document,
+    private renderer: Renderer2,
+    private router: Router
+
+  ) { }
 
   ngOnInit(): void {
     this.loadTweets();
+
   }
 
   loadTweets(page: number = 1, userId?: number, followingOnly: boolean = false): void {
@@ -79,8 +88,10 @@ export class MainContentComponent implements OnInit {
 
   }
 
-  getComments(){
-
+  openComments(postId: string): void {
+    // Navigate to the open-comments route with the specific post ID
+    this.router.navigate(['/posts', postId]);
   }
+
 
 }

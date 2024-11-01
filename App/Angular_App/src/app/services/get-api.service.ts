@@ -1,9 +1,12 @@
-import { Injectable } from '@angular/core';
+// import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
 import { IGetTweets } from '../models/GetTweets';
 import { ILoginResponse, IRegisterResponse } from '../models/RegAndLog';
 import { ILoggedInUser } from '../models/LoggedInUser';
+
+import { isPlatformBrowser } from '@angular/common';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 
 
 @Injectable({
@@ -13,41 +16,43 @@ export class GetApiService {
 
   private apiUrl = 'http://localhost:8000/api/'; // Replace with your Django API URL
 
-  constructor(private http: HttpClient) { }
-
-  storeToLocalStorage() {
-    const token = localStorage.getItem('auth_token');  // Retrieve token from local storage
-    console.log("the token is: " + JSON.stringify(token));
-    const headers = new HttpHeaders({
-      'Authorization': `Token ${token}`
-    });
-    return headers;
-  }
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private http: HttpClient) {}
 
   getTokenFromCookieOrLocalStorage(): string | null {
-    try {
-      // Try to retrieve token from cookies
-      const cookies = document.cookie.split('; ');
-      const authTokenCookie = cookies.find(row => row.startsWith('auth_token='));
-      if (authTokenCookie) {
-        const token = authTokenCookie.split('=')[1];
-        return token;
-      }
-
-      // Fallback to local storage if cookie is not found
-      const token = localStorage.getItem('auth_token');
-      if (token) {
-        return token;
-      }
-
-      // No token found in either cookies or local storage
-      console.error('No auth token found');
-      return null;
-    } catch (error) {
-      console.error('Error retrieving auth token:', error);
-      return null;
+    // Check if we are running in the browser
+    if (!isPlatformBrowser(this.platformId)) {
+      console.warn('localStorage and document.cookie are not available in this environment.');
+      return null; // Return null if not in the browser
     }
+
+    // Attempt to retrieve the token from local storage first
+    const tokenFromLocalStorage = localStorage.getItem('auth_token');
+    if (tokenFromLocalStorage) {
+      console.log("got token from local storage")
+      return tokenFromLocalStorage;
+    }
+
+    // If not found, try to retrieve the token from cookies
+    try {
+      const cookies = document.cookie.split('; ');
+
+      for (const cookie of cookies) {
+        const [key, value] = cookie.split('=');
+        if (key.trim() === 'auth_token') {
+          console.log("got token from cookie")
+          return decodeURIComponent(value); // Return the token after decoding
+        }
+      }
+    } catch (error) {
+      console.error('Error retrieving auth token from cookies:', error);
+    }
+
+    // If no token is found in either local storage or cookies, log the error
+    console.error('No auth token found. Authorization token missing or expired.');
+    return null;
   }
+
+
 
   register(userData: FormData): Observable<IRegisterResponse> {
     return this.http.post<IRegisterResponse>(this.apiUrl + 'register/', userData);

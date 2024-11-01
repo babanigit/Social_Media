@@ -9,7 +9,6 @@ import { LoggedInUserModule } from '../logged-in-user/logged-in-user.module';
 import { OpenCommentsModule } from '../open-comments/open-comments.module';
 
 
-
 @NgModule({
   declarations: [
     MainContentComponent,
@@ -22,7 +21,7 @@ import { OpenCommentsModule } from '../open-comments/open-comments.module';
     LoginModule,
     CreateTweetModule,
     LoggedInUserModule,
-    OpenCommentsModule
+    OpenCommentsModule,
   ],
   exports: [MainContentComponent]
 })

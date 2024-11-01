@@ -20,9 +20,9 @@ const routes: Routes = [
 
   { path: 'customers', loadChildren: () => import('./pages/customers/customers.module').then(m => m.CustomersModule) },
 
-  { path: 'home', loadChildren: () => import('./pages/home/home.module').then(m => m.HomeModule) },
+  // { path: 'home', loadChildren: () => import('./pages/home/home.module').then(m => m.HomeModule) },
 
-  { path: 'explore', loadChildren: () => import('./pages/explore/explore.module').then(m => m.ExploreModule) },
+  // { path: 'explore', loadChildren: () => import('./pages/explore/explore.module').then(m => m.ExploreModule) },
   {
     path: '**',
     component: NotFoundPageComponent // Use component directly

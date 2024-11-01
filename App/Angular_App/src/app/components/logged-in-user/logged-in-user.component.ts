@@ -37,7 +37,7 @@ export class LoggedInUserComponent implements OnInit {
   loading = true;
   error: string | null = null;
 
-  constructor(private getApiService: GetApiService) {}
+  constructor(private getApiService: GetApiService) { }
 
   ngOnInit(): void {
 
@@ -50,7 +50,10 @@ export class LoggedInUserComponent implements OnInit {
     }
     console.log('Authentication token - ', token);
 
+    this.getLoggedIn()
+  }
 
+  getLoggedIn() {
     this.getApiService.getLoggedInUser().subscribe({
       next: (data) => {
         this.user = data;

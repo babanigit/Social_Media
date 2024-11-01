@@ -1,10 +1,13 @@
-<app-open-comments />
-
 
 <app-logged-in-user (userData)="reciveUserData($event)" />
+<hr>
 <app-register />
+<hr>
 <app-login />
+<hr>
+
 <app-create-tweet (tweetCreated)="loadTweets()" />
+<hr>
 
 <section>
   <div class="container mx-auto mt-8 mb-2 max-w-screen-xl grow px-0 sm:px-5">
@@ -126,7 +129,7 @@
 
                               <!-- comments  -->
                               <div class="ld-text-gray-500 flex items-center space-x-1">
-                                <button (click)="getComments()" aria-label="Comment"
+                                <button (click)="openComments(data.id)" aria-label="Comment"
                                   class="rounded-full p-1.5 outline-offset-2 hover:bg-gray-300/20" type="button">
                                   <span class="" data-state="closed"><svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                       viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"
@@ -159,8 +162,8 @@
                               </div>
 
                               <!-- likes -->
-                              <div class="ld-text-gray-500 flex items-center space-x-1">
-                                <button [ngClass]="{'bg-red-500 text-white': data.liked_by_user_ids.includes(user!.id)}"
+                              <div *ngIf="user" class="ld-text-gray-500 flex items-center space-x-1">
+                                <button [ngClass]="{'bg-red-500 text-white': data.liked_by_user_ids.includes(user.id)}"
                                   (click)="getLikeFun(data.id)" aria-label="Like"
                                   class="  bg-gray-300/20 rounded-full p-1.5 outline-offset-2" type="button">
                                   <span class="" data-state="closed"><svg xmlns="http://www.w3.org/2000/svg" fill="none"
