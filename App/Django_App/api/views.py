@@ -477,7 +477,6 @@ def get_Users_and_Tweets(request):
 
 
 def get_tweets(request):
-
     if request.method == "GET":
         try:
             # Parse query parameters
@@ -528,16 +527,9 @@ def get_tweets(request):
                 # Check if the current user has liked each tweet
                 is_liked = current_user in tweet.likes.all() if current_user else False
 
-                # Fetch comments for each tweet
+                # Fetch only the comment IDs for each tweet
                 comments_data = [
-                    {
-                        "id": str(comment.id),
-                        "content": comment.content,
-                        "created_at": comment.created_at,
-                        "user_id": str(comment.user.id),
-                        "username": comment.user.username,
-                    }
-                    for comment in tweet.comments.all()
+                    str(comment.id) for comment in tweet.comments.all()
                 ]
 
                 tweet_data = {
@@ -553,7 +545,7 @@ def get_tweets(request):
                         str(user_id)
                         for user_id in tweet.likes.values_list("id", flat=True)
                     ],  # Convert liked user IDs to strings
-                    "comments": comments_data,  # Include comments data
+                    "comments_ids": comments_data,  # Include only comment IDs
                     "user": {
                         "id": str(tweet.user.id),  # Convert user UUID to string
                         "username": tweet.user.username,
@@ -582,7 +574,6 @@ def get_tweets(request):
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
     return JsonResponse({"error": "Method not allowed"}, status=405)
-
 
 @csrf_exempt
 def like_tweet(request, tweet_id):
