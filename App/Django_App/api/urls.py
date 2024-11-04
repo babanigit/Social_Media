@@ -17,19 +17,18 @@ urlpatterns = [
     path('tweets/<str:tweet_id>/delete/', views.delete_tweet, name='delete_tweet'),
     path('tweets/<str:tweet_id>/like/', views.like_tweet, name='like_tweet'),
     path('tweets/<str:tweet_id>/retweet/', views.retweet, name='retweet'),
-    
+    path('tweet/<str:tweet_id>/tweet', views.get_tweet_by_id, name='get_tweet_by_id'),
+
+        
     # Comment operations
-    path('tweets/<str:tweet_id>/comments/', views.comment_on_tweet, name='comment_on_tweet'),
-    path('tweets/<str:tweet_id>/getComments/', views.get_tweet_comments, name='get_tweet_comments'),
-    
+    path('tweets/<str:tweet_id>/postGetComments/', views.post_get_tweet_comments, name='get_tweet_comments'),
     path('tweets/<str:comment_id>/likeComment/', views.like_comment, name='like_comment'),
     path('tweets/<str:comment_id>/dislikeComments/', views.dislike_comment, name='dislike_comment'),
 
 
-
     # User operations
     path('users/', views.get_Users_and_Tweets , name='get_user_and_tweets'),
-    path('users/<str:username>/', views.get_user_profile, name='get_user_profile'),
+    path('users/<str:username>/', views.get_user_profile, name='get_user_profile'), 
     path('users/<str:username>/tweets/', views.get_user_tweets, name='get_user_tweets'),
     path('users/<str:user_id>/follow/', views.follow_user, name='follow_user'),
     path('profile/update/', views.update_profile, name='update_profile'),

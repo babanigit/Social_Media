@@ -8,10 +8,10 @@ from django.db.models import Count, Q
 from .models import User, Tweet, Comment, Retweet
 from django.contrib.auth.hashers import check_password
 from django.core.files.storage import default_storage
-
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.views.decorators.http import require_http_methods
+from django.shortcuts import get_object_or_404
 
 
 def get_authenticated_user(request):
@@ -528,9 +528,7 @@ def get_tweets(request):
                 is_liked = current_user in tweet.likes.all() if current_user else False
 
                 # Fetch only the comment IDs for each tweet
-                comments_data = [
-                    str(comment.id) for comment in tweet.comments.all()
-                ]
+                comments_data = [str(comment.id) for comment in tweet.comments.all()]
 
                 tweet_data = {
                     "id": str(tweet.id),  # Convert UUID to string
@@ -575,6 +573,71 @@ def get_tweets(request):
             return JsonResponse({"error": str(e)}, status=500)
     return JsonResponse({"error": "Method not allowed"}, status=405)
 
+
+def get_tweet_by_id(request, tweet_id):
+    if request.method == "GET":
+        try:
+            # Fetch the specific tweet by ID
+            tweet = get_object_or_404(
+                Tweet.objects.annotate(
+                    like_count=Count("likes"),
+                    comment_count=Count("comments"),
+                    retweet_count=Count("retweets"),
+                    user_followers_count=Count("user__followers"),
+                    user_following_count=Count("user__following"),
+                ).select_related("user"),
+                id=tweet_id,
+            )
+
+            # Authentication to check if the user has liked the tweet
+            token = request.COOKIES.get("auth_token")
+            current_user = None
+            is_liked = False
+            if token:
+                try:
+                    current_user = User.objects.get(token=token)
+                    is_liked = current_user in tweet.likes.all()
+                except User.DoesNotExist:
+                    return JsonResponse(
+                        {"error": "Invalid authentication token"}, status=401
+                    )
+
+            # Prepare the comment IDs for this tweet
+            comments_data = [str(comment.id) for comment in tweet.comments.all()]
+
+            tweet_data = {
+                "id": str(tweet.id),  # Convert UUID to string
+                "content": tweet.content,
+                "image": tweet.image.url if tweet.image else None,
+                "created_at": tweet.created_at,
+                "likes_count": tweet.like_count,
+                "comments_count": tweet.comment_count,
+                "retweets_count": tweet.retweet_count,
+                "is_liked": is_liked,
+                "liked_by_user_ids": [
+                    str(user_id) for user_id in tweet.likes.values_list("id", flat=True)
+                ],  # Convert liked user IDs to strings
+                "comments_ids": comments_data,  # Include only comment IDs
+                "user": {
+                    "id": str(tweet.user.id),  # Convert user UUID to string
+                    "username": tweet.user.username,
+                    "name": tweet.user.name,
+                    "profile_image": (
+                        tweet.user.profile_image.url
+                        if tweet.user.profile_image
+                        else None
+                    ),
+                    "followers_count": tweet.user_followers_count,
+                    "following_count": tweet.user_following_count,
+                },
+            }
+
+            return JsonResponse(tweet_data, status=200)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    return JsonResponse({"error": "Method not allowed"}, status=405)
+
+
 @csrf_exempt
 def like_tweet(request, tweet_id):
     if request.method == "POST":
@@ -615,86 +678,7 @@ def like_tweet(request, tweet_id):
 
 
 @csrf_exempt
-def comment_on_tweet(request, tweet_id):
-    if request.method == "POST":
-        token = request.COOKIES.get("auth_token")
-        # If no cookie is present, check the Authorization header for the token
-        if not token:
-            auth_header = request.headers.get("Authorization")
-            if auth_header and auth_header.startswith("Token "):
-                token = auth_header.split(" ")[1]  # Extract the token part
-            else:
-                return JsonResponse({"error": "Authentication required"}, status=401)
-
-        try:
-            user = User.objects.get(token=token)
-            tweet = Tweet.objects.get(id=tweet_id)
-
-            data = (
-                json.loads(request.body)
-                if request.content_type == "application/json"
-                else request.POST
-            )
-            content = data.get("content")
-
-            if not content:
-                return JsonResponse(
-                    {"error": "Comment content is required"}, status=400
-                )
-
-            comment = Comment.objects.create(tweet=tweet, user=user, content=content)
-
-            return JsonResponse(
-                {
-                    "message": "Comment added successfully",
-                    "comment_id": comment.id,
-                    "content": comment.content,
-                    "created_at": comment.created_at,
-                    "username": user.username,
-                },
-                status=201,
-            )
-
-        except Tweet.DoesNotExist:
-            return JsonResponse({"error": "Tweet not found"}, status=404)
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
-
-    elif request.method == "GET":
-        try:
-            tweet = Tweet.objects.get(id=tweet_id)
-            comments = Comment.objects.filter(tweet=tweet).select_related("user")
-
-            comments_data = [
-                {
-                    "id": comment.id,
-                    "content": comment.content,
-                    "created_at": comment.created_at,
-                    "user": {
-                        "id": comment.str(user.id),
-                        "username": comment.user.username,
-                        "profile_image": (
-                            comment.user.profile_image.url
-                            if comment.user.profile_image
-                            else None
-                        ),
-                    },
-                }
-                for comment in comments
-            ]
-
-            return JsonResponse({"comments": comments_data}, status=200)
-
-        except Tweet.DoesNotExist:
-            return JsonResponse({"error": "Tweet not found"}, status=404)
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
-
-    return JsonResponse({"error": "Method not allowed"}, status=405)
-
-
-@csrf_exempt
-def get_tweet_comments(request, tweet_id):
+def post_get_tweet_comments(request, tweet_id):
     if request.method == "GET":
         try:
             tweet = Tweet.objects.get(id=tweet_id)
@@ -708,6 +692,7 @@ def get_tweet_comments(request, tweet_id):
                     "user": {
                         "id": str(comment.user.id),
                         "username": comment.user.username,
+                        "name": comment.user.name,
                         "profile_image": (
                             comment.user.profile_image.url
                             if comment.user.profile_image
@@ -769,9 +754,13 @@ def like_comment(request, comment_id):
                 {
                     "message": f"Comment {action} successfully",
                     "likes_count": comment.likes.count(),
-                    "liked_by_user_ids": list(comment.likes.values_list("id", flat=True)),
+                    "liked_by_user_ids": list(
+                        comment.likes.values_list("id", flat=True)
+                    ),
                     "dislikes_count": comment.dislikes.count(),
-                    "disliked_by_user_ids": list(comment.dislikes.values_list("id", flat=True)),
+                    "disliked_by_user_ids": list(
+                        comment.dislikes.values_list("id", flat=True)
+                    ),
                 },
                 status=200,
             )
@@ -815,9 +804,13 @@ def dislike_comment(request, comment_id):
                 {
                     "message": f"Comment {action} successfully",
                     "likes_count": comment.likes.count(),
-                    "liked_by_user_ids": list(comment.likes.values_list("id", flat=True)),
+                    "liked_by_user_ids": list(
+                        comment.likes.values_list("id", flat=True)
+                    ),
                     "dislikes_count": comment.dislikes.count(),
-                    "disliked_by_user_ids": list(comment.dislikes.values_list("id", flat=True)),
+                    "disliked_by_user_ids": list(
+                        comment.dislikes.values_list("id", flat=True)
+                    ),
                 },
                 status=200,
             )

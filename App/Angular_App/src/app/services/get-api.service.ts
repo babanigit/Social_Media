@@ -18,6 +18,7 @@ export class GetApiService {
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object, private http: HttpClient) { }
 
+  // token function
   getTokenFromCookieOrLocalStorage(): string | null {
     // Check if we are running in the browser
     if (!isPlatformBrowser(this.platformId)) {
@@ -52,6 +53,7 @@ export class GetApiService {
     return null;
   }
 
+  // register and login
   register(userData: FormData): Observable<IRegisterResponse> {
     return this.http.post<IRegisterResponse>(this.apiUrl + '/register/', userData);
   }
@@ -63,6 +65,7 @@ export class GetApiService {
     });
   }
 
+  // get logged in user
   getLoggedInUser(page: number = 1): Observable<ILoggedInUser> {
     // Retrieve the auth token from cookies or local storage
     const token = this.getTokenFromCookieOrLocalStorage();
@@ -85,12 +88,13 @@ export class GetApiService {
     return this.http.get<ILoggedInUser>(this.apiUrl + 'user/', { headers, params })
       .pipe(
         catchError((error) => {
-          console.error('Error loading user data:', error);
-          return throwError('Error loading user data'); // Propagate the error
+          console.error('Error loading logged in User :', error);
+          throw error;
         })
       );
   }
 
+  // get tweets
   getTweets(
     page: number = 1,
     per_page: number = 10,
@@ -109,7 +113,34 @@ export class GetApiService {
       params = params.set('following_only', 'true');
     }
 
-    return this.http.get<IGetTweets>(this.apiUrl + '/tweets/', { params });
+    return this.http.get<IGetTweets>(this.apiUrl + '/tweets/', { params })
+      .pipe(
+        catchError((error) => {
+          console.error('Error loading get Tweets :', error);
+          throw error;
+        })
+      );
+  }
+
+  getTweetById(tweetId: string): Observable<any> {
+    const token = this.getTokenFromCookieOrLocalStorage();
+
+    if (!token) {
+      console.error('Authorization token missing');
+      return throwError('Authorization token missing');
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Token ${token}`
+    });
+
+    return this.http.get(`${this.apiUrl}/tweet/${tweetId}/tweet`)
+      .pipe(
+        catchError((error) => {
+          console.error('Error loading like get tweet by id :', error);
+          throw error;
+        })
+      );
   }
 
   createTweet(content: string, image?: File): Observable<any> {
@@ -131,7 +162,13 @@ export class GetApiService {
       'Authorization': `Token ${token}`
     });
 
-    return this.http.post(this.apiUrl + '/tweets/create/', formData, { headers });
+    return this.http.post(this.apiUrl + '/tweets/create/', formData, { headers })
+      .pipe(
+        catchError((error) => {
+          console.error('Error loading create Tweet :', error);
+          throw error;
+        })
+      );
   }
 
   likeTweet(tweetId: string): Observable<any> {
@@ -146,12 +183,24 @@ export class GetApiService {
       'Authorization': `Token ${token}`
     });
 
-    return this.http.post(`${this.apiUrl}/tweets/${tweetId}/like/`, null, { headers });
+    return this.http.post(`${this.apiUrl}/tweets/${tweetId}/like/`, null, { headers })
+      .pipe(
+        catchError((error) => {
+          console.error('Error loading like tweet :', error);
+          throw error;
+        })
+      );
   }
 
   getTweetComments(tweetId: string): Observable<any> {
-    const url = `${this.apiUrl}/tweets/${tweetId}/getComments/`;
-    return this.http.get(url);
+    const url = `${this.apiUrl}/tweets/${tweetId}/postGetComments/`;
+    return this.http.get(url)
+      .pipe(
+        catchError((error) => {
+          console.error('Error loading get Tweet Comments :', error);
+          throw error;
+        })
+      );
   }
 
   // storeTokenFromCookie() {
