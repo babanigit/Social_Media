@@ -85,7 +85,7 @@ export class GetApiService {
     const params = new HttpParams().set('page', page.toString());
 
     // Make the GET request to fetch the logged-in user data
-    return this.http.get<ILoggedInUser>(this.apiUrl + 'user/', { headers, params })
+    return this.http.get<ILoggedInUser>(this.apiUrl + '/user/', { headers, params })
       .pipe(
         catchError((error) => {
           console.error('Error loading logged in User :', error);

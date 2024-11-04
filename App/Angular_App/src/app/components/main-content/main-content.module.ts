@@ -12,8 +12,6 @@ import { OpenCommentsModule } from '../open-comments/open-comments.module';
 @NgModule({
   declarations: [
     MainContentComponent,
-    TimeAgoPipe,
-
   ],
   imports: [
     CommonModule,
@@ -22,6 +20,7 @@ import { OpenCommentsModule } from '../open-comments/open-comments.module';
     CreateTweetModule,
     LoggedInUserModule,
     OpenCommentsModule,
+    TimeAgoPipe
   ],
   exports: [MainContentComponent]
 })

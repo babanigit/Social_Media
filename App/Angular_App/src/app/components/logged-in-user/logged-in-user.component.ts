@@ -28,7 +28,7 @@ interface UserInfo {
 @Component({
   selector: 'app-logged-in-user',
   templateUrl: './logged-in-user.component.html',
-  styleUrls: ['./logged-in-user.component.css']
+  styleUrls: ['./logged-in-user.component.css'],
 })
 export class LoggedInUserComponent implements OnInit {
   @Output() userData = new EventEmitter<ILoggedInUser>();
@@ -37,20 +37,17 @@ export class LoggedInUserComponent implements OnInit {
   loading = true;
   error: string | null = null;
 
-  constructor(private getApiService: GetApiService) { }
+  constructor(private getApiService: GetApiService) {}
 
   ngOnInit(): void {
-
-
     const token = this.getApiService.getTokenFromCookieOrLocalStorage();
     if (!token) {
-      console.error('Authorization token missing');
+      console.error('Authorization token missinggg');
       // Handle redirection to login or display a message
       return;
     }
-    console.log('Authentication token - ', token);
 
-    this.getLoggedIn()
+    this.getLoggedIn();
   }
 
   getLoggedIn() {
@@ -64,8 +61,7 @@ export class LoggedInUserComponent implements OnInit {
         this.error = 'Failed to load user data. Please try again later.';
         this.loading = false;
         console.error('Error loading user data:', err);
-      }
+      },
     });
   }
-
 }
