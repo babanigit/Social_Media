@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GetApiService } from '../../services/get-api.service';
 import { IGetComments } from '../../models/Comments';
+import { IGetTweetById } from '../../models/GetTweets';
 
 @Component({
   selector: 'app-open-comments',
@@ -11,12 +12,12 @@ import { IGetComments } from '../../models/Comments';
 export class OpenCommentsComponent implements OnInit {
   postId: string | null = null;
   commentsData: IGetComments | undefined;
-  tweetAndUserData: any;
+  tweetById: IGetTweetById | undefined;
 
   constructor(
     private route: ActivatedRoute,
     private commentService: GetApiService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
@@ -42,8 +43,8 @@ export class OpenCommentsComponent implements OnInit {
 
     this.commentService.getTweetById(postId).subscribe({
       next: (data) => {
-        this.tweetAndUserData = data;
-        console.log('The fetched tweetbyid is :', this.tweetAndUserData);
+        this.tweetById = data;
+        console.log('The fetched tweetbyid is :', this.tweetById);
       },
       error: (error) => {
         console.error('Error fetching tweetbyid:', error);

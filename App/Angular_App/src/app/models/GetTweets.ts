@@ -27,3 +27,18 @@ export interface IUser {
   followers_count: number;
   following_count: number;
 }
+
+
+export interface IGetTweetById {
+  id: string
+  content: string
+  image: any
+  created_at: string
+  likes_count: number
+  comments_count: number
+  retweets_count: number
+  is_liked: boolean
+  liked_by_user_ids: string[]
+  comments_ids: string[]
+  user: IUser
+}
