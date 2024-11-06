@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { GetApiService } from '../../services/get-api.service';
 import { IGetComments } from '../../models/Comments';
 import { IGetTweetById } from '../../models/GetTweets';
+import { ILoggedInUser } from '../../models/LoggedInUser';
 
 @Component({
   selector: 'app-open-comments',
@@ -17,16 +18,14 @@ export class OpenCommentsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private commentService: GetApiService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
       this.postId = params.get('id'); // Access the 'id' parameter
       console.log('Post ID:', this.postId);
       // Add logic here to load comments or perform actions based on the ID
-      if (this.postId) {
-        this.fetchById(this.postId);
-      }
+      this.getLoggedIn();
     });
   }
 
@@ -49,6 +48,37 @@ export class OpenCommentsComponent implements OnInit {
       error: (error) => {
         console.error('Error fetching tweetbyid:', error);
       },
+    });
+  }
+
+  user: ILoggedInUser | undefined;
+  loading = true;
+  error: string | null = null;
+
+  getLoggedIn() {
+    this.commentService.getLoggedInUser().subscribe({
+      next: (data) => {
+        this.user = data;
+        this.loading = false;
+        if (this.postId) {
+          this.fetchById(this.postId);
+        }
+      },
+      error: (err) => {
+        this.error = 'Failed to load user data. Please try again later.';
+        this.loading = false;
+        console.error('Error loading user data:', err);
+      },
+    });
+  }
+
+  getLikeFun(idNum: string) {
+    this.commentService.likeTweet(idNum).subscribe((response) => {
+      console.log('Like tweet response ', response);
+
+      if (this.postId) {
+        this.fetchById(this.postId);
+      }
     });
   }
 }
