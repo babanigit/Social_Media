@@ -4,8 +4,8 @@ import { MainContentComponent } from './main-content.component';
 import { TimeAgoPipe } from '../../pipes/time-ago.pipe';
 
 import { CreateTweetModule } from '../create-tweet/create-tweet.module';
-import { LoggedInUserModule } from '../logged-in-user/logged-in-user.module';
 import { OpenCommentsModule } from '../open-comments/open-comments.module';
+import { MainWelcomeComponent } from '../main-welcome/main-welcome.component';
 
 @NgModule({
   declarations: [MainContentComponent],
@@ -13,8 +13,8 @@ import { OpenCommentsModule } from '../open-comments/open-comments.module';
     CommonModule,
 
     CreateTweetModule,
-    LoggedInUserModule,
     OpenCommentsModule,
+    MainWelcomeComponent,
     TimeAgoPipe,
   ],
   exports: [MainContentComponent],
