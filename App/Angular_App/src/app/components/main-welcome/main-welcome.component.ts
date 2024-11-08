@@ -32,7 +32,7 @@ export class MainWelcomeComponent implements OnInit {
         this.userData.emit(this.user);
       },
       error: (err) => {
-        this.error = 'Failed to load user data. Please try again later.';
+        this.error = err;
         this.loading = false;
         console.error('Error loading user data:', err);
         // this.router.navigate(['/login']);

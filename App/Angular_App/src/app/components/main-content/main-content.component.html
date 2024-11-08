@@ -1,8 +1,10 @@
-
 <app-main-welcome (userData)="reciveUserData($event)" />
 
-<app-create-tweet (tweetCreated)="loadTweets()" />
-<hr>
+
+<ng-container *ngIf="user">
+  <app-create-tweet (tweetCreated)="loadTweets()" />
+</ng-container>
+
 
 <section>
   <div class="container mx-auto mt-8 mb-2 max-w-screen-xl grow px-0 sm:px-5">
@@ -22,7 +24,6 @@
                 <ng-container *ngFor="let data of tweets">
 
                   <!-- {{data | json}} -->
-
 
                   <div data-index="4" data-known-size="228" data-item-index="4" style="overflow-anchor: none">
                     <article class="cursor-pointer px-5 pt-4 pb-3 hover:bg-gray-100 dark:hover:bg-gray-900">
@@ -217,7 +218,8 @@
         </div>
       </div>
       <div class="col-span-11 md:col-span-11 lg:col-span-4">
-        <aside
+
+        <aside *ngIf="!user"
           class="rounded-none border-x-0 sm:rounded-xl sm:border-x border bg-white dark:border-gray-700 dark:bg-black mb-4 space-y-4 p-5">
           <img alt="Dizzy emoji" class="mx-auto size-14" src="https://hey-assets.b-cdn.net/images/emojis/dizzy.png" />
           <div class="space-y-3 text-center">
@@ -230,6 +232,7 @@
             </div>
           </div>
         </aside>
+
         <aside
           class="rounded-none border-x-0 sm:rounded-xl sm:border-x border bg-white dark:border-gray-700 dark:bg-black mb-4 space-y-4 p-5">
           <h5 class="text-lg font-bold">Staff Picks</h5>
@@ -407,6 +410,7 @@
             </div>
           </div>
         </aside>
+
         <footer class="top-20 sticky mt-4 flex flex-wrap gap-x-[12px] gap-y-2 px-3 text-sm lg:px-0">
           <span class="ld-text-gray-500 font-bold">© 2024 Hey.xyz</span><a class="outline-offset-4"
             rel="noreferrer noopener" href="/terms">Terms</a><a class="outline-offset-4" rel="noreferrer noopener"
@@ -418,6 +422,7 @@
             rel="noreferrer noopener" href="/rules">Rules</a><a class="outline-offset-4" rel="noreferrer noopener"
             href="/support">Support</a>
         </footer>
+
       </div>
     </div>
   </div>

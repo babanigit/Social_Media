@@ -1,9 +1,21 @@
 <!-- create-tweet.component.html -->
-<div class="create-tweet-container">
-  <form (submit)="onSubmit()">
-    <textarea [(ngModel)]="content" placeholder="What's happening?" required [ngModelOptions]="{standalone: true}" ></textarea>
-    <input type="file" (change)="onFileSelected($event)"  />
-    <button type="submit">Tweet</button>
-  </form>
-</div>
 
+
+
+<aside
+  class="rounded-none border-x-0 sm:rounded-xl sm:border-x border bg-white dark:border-gray-700 dark:bg-black mb-4 space-y-4 p-5">
+  <div class="space-y-3 text-center">
+    <div class="font-bold">
+
+      <textarea [(ngModel)]="content" placeholder="What's happening?" required
+      [ngModelOptions]="{standalone: true}"></textarea>
+    <!-- <input type="file" (change)="onFileSelected($event)" /> -->
+
+    </div>
+    <div><button
+      (click)="onSubmit()"
+      class="text-white hover:text-white active:text-gray-400 dark:text-gray-950 dark:hover:text-gray-900 dark:active:text-gray-600 bg-gray-950 hover:bg-gray-700 active:bg-gray-700 dark:bg-white dark:hover:bg-gray-200 dark:active:bg-gray-200 border border-gray-950 hover:border-gray-800 active:border-gray-700 dark:border-white dark:hover:border-gray-100 dark:active:border-gray-200 px-5 py-1.5 rounded-full font-bold outline-2 outline-offset-4 transition-colors">
+        <div> Tweet</div>
+      </button></div>
+  </div>
+</aside>
