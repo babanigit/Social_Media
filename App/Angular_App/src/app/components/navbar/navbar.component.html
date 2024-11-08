@@ -63,11 +63,15 @@
         <div class="flex items-center gap-4">
           <div class="flex items-center space-x-2"><button
               class="text-gray-950 active:text-gray-300 dark:text-white dark:active:text-gray-700 border border-gray-300 hover:border-gray-950 dark:border-gray-700 dark:hover:border-gray-100 px-4 py-1 rounded-full font-bold outline-2 outline-offset-4">
-              <div>Signup</div>
+              <div
+              (click)="signup()"
+              >Signup</div>
             </button><button
               class="text-white hover:text-white active:text-gray-400 dark:text-gray-950 dark:hover:text-gray-900 dark:active:text-gray-600 bg-gray-950 hover:bg-gray-700 active:bg-gray-700 dark:bg-white dark:hover:bg-gray-200 dark:active:bg-gray-200 border border-gray-950 hover:border-gray-800 active:border-gray-700 dark:border-white dark:hover:border-gray-100 dark:active:border-gray-200 px-4 py-1 inline-flex items-center space-x-1.5 rounded-full font-bold outline-2 outline-offset-4"><img
                 alt="Lens Logo" class="mr-0.5 h-3" height="12" src="assets/logo.png" width="19">
-              <div>Login</div>
+              <div
+              (click)="login()"
+              >Login</div>
             </button></div>
         </div>
       </div>

@@ -2,6 +2,7 @@ import { GetApiService } from './../../services/get-api.service';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ILoggedInUser } from '../../models/LoggedInUser';
+import { Router } from '@angular/router';
 
 interface UserInfo {
   username: string;
@@ -37,16 +38,12 @@ export class LoggedInUserComponent implements OnInit {
   loading = true;
   error: string | null = null;
 
-  constructor(private getApiService: GetApiService) {}
+  constructor(
+    private getApiService: GetApiService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    const token = this.getApiService.getTokenFromCookieOrLocalStorage();
-    if (!token) {
-      console.error('Authorization token missinggg');
-      // Handle redirection to login or display a message
-      return;
-    }
-
     this.getLoggedIn();
   }
 
@@ -61,6 +58,7 @@ export class LoggedInUserComponent implements OnInit {
         this.error = 'Failed to load user data. Please try again later.';
         this.loading = false;
         console.error('Error loading user data:', err);
+        // this.router.navigate(['/login']);
       },
     });
   }
