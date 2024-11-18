@@ -476,6 +476,51 @@ def get_Users_and_Tweets(request):
     return JsonResponse({"error": "Method not allowed"}, status=405)
 
 
+def get_Users(request):
+    if request.method == "GET":
+        try:
+            # Get pagination parameters
+            page = int(request.GET.get("page", 1))
+            per_page = int(request.GET.get("per_page", 10))
+
+            # Query users with follower and following counts
+            users = User.objects.annotate(
+                followers_count=Count("followers"),
+                following_count=Count("following")
+            )
+
+            # Paginate the users
+            paginator = Paginator(users.order_by("id"), per_page)
+            page_obj = paginator.get_page(page)
+
+            # Prepare user data
+            users_data = [
+                {
+                    "id": str(user.id),
+                    "username": user.username,
+                    "name": user.name,
+                    "profile_image": user.profile_image.url if user.profile_image else None,
+                    "followers_count": user.followers_count,
+                    "following_count": user.following_count,
+                }
+                for user in page_obj
+            ]
+
+            # Return paginated response
+            return JsonResponse(
+                {
+                    "users": users_data,
+                    "total_pages": paginator.num_pages,
+                    "current_page": page,
+                    "has_next": page_obj.has_next(),
+                    "has_previous": page_obj.has_previous(),
+                },
+                status=200,
+            )
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    return JsonResponse({"error": "Method not allowed"}, status=405)
+
 def get_tweets(request):
     if request.method == "GET":
         try:

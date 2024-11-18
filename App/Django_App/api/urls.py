@@ -28,6 +28,8 @@ urlpatterns = [
 
     # User operations
     path('users/', views.get_Users_and_Tweets , name='get_user_and_tweets'),
+    path('getUsers/', views.get_Users , name='get_Users'),
+    
     path('users/<str:username>/', views.get_user_profile, name='get_user_profile'), 
     path('users/<str:username>/tweets/', views.get_user_tweets, name='get_user_tweets'),
     path('users/<str:user_id>/follow/', views.follow_user, name='follow_user'),
