@@ -485,8 +485,7 @@ def get_Users(request):
 
             # Query users with follower and following counts
             users = User.objects.annotate(
-                followers_count=Count("followers"),
-                following_count=Count("following")
+                followers_count=Count("followers"), following_count=Count("following")
             )
 
             # Paginate the users
@@ -499,7 +498,9 @@ def get_Users(request):
                     "id": str(user.id),
                     "username": user.username,
                     "name": user.name,
-                    "profile_image": user.profile_image.url if user.profile_image else None,
+                    "profile_image": (
+                        user.profile_image.url if user.profile_image else None
+                    ),
                     "followers_count": user.followers_count,
                     "following_count": user.following_count,
                 }
@@ -520,6 +521,7 @@ def get_Users(request):
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
     return JsonResponse({"error": "Method not allowed"}, status=405)
+
 
 def get_tweets(request):
     if request.method == "GET":

@@ -52,7 +52,7 @@ SECRET_KEY = "django-insecure-!@iz$6o=sufd+-t4z+c#)ghjblnown@=kvj_lqw2p5gngi))a7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.vercel.app']
 
 # settings.py
 MAX_TWEET_LENGTH = 280  # or your desired length
