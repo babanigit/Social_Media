@@ -236,22 +236,21 @@
         <aside
           class="rounded-none border-x-0 sm:rounded-xl sm:border-x border bg-white dark:border-gray-700 dark:bg-black mb-4 space-y-4 p-5">
           <h5 class="text-lg font-bold">Staff Picks</h5>
-          <div class="w-full truncate pr-1">
+
+          <div *ngFor="let data of users" class="w-full truncate pr-1">
             <div class="flex items-center justify-between">
               <a href="/u/mimomagri"><span><span data-state="closed">
                     <div class="mr-8 flex items-center space-x-3">
                       <img alt="0x07a7ac" class="size-11 rounded-full border bg-gray-200 dark:border-gray-700"
-                        height="44" loading="lazy"
-                        src="https://ik.imagekit.io/lens/media-snapshot/tr:w-350,h-350,q-80/ebcd115fa4ac4ade61afba224eaafad954b29931055513da86e15cfb8fa12ff4.jpg"
-                        width="44" />
+                        height="44" loading="lazy" [src]=" 'http://127.0.0.1:8000' + data.profile_image " width="44" />
                       <div>
                         <div class="flex max-w-sm items-center">
                           <div class="text-md grid">
-                            <div class="truncate font-semibold">Mimo</div>
+                            <div class="truncate font-semibold"> {{data.name}} </div>
                           </div>
                         </div>
                         <div>
-                          <span class="ld-text-gray-500 text-sm">&#64;mimomagri</span>
+                          <span class="ld-text-gray-500 text-sm">&#64;{{data.username}} </span>
                         </div>
                       </div>
                     </div>
@@ -267,149 +266,11 @@
               </div>
             </div>
           </div>
-          <div class="w-full truncate pr-1">
-            <div class="flex items-center justify-between">
-              <a href="/u/sarahwords"><span><span data-state="closed">
-                    <div class="mr-8 flex items-center space-x-3">
-                      <img alt="0x07f960" class="size-11 rounded-full border bg-gray-200 dark:border-gray-700"
-                        height="44" loading="lazy"
-                        src="https://ik.imagekit.io/lens/media-snapshot/tr:w-350,h-350,q-80/1f368edf35a6a84d6ed5b5bcdcec1830f8795fbee65d36789853c51e124cc0eb.webp"
-                        width="44" />
-                      <div>
-                        <div class="flex max-w-sm items-center">
-                          <div class="text-md grid">
-                            <div class="truncate font-semibold">Sarah Words</div>
-                          </div>
-                        </div>
-                        <div>
-                          <span class="ld-text-gray-500 text-sm">&#64;sarahwords</span>
-                        </div>
-                      </div>
-                    </div>
-                  </span></span></a>
-              <div class="flex items-center space-x-2">
-                <div class="contents">
-                  <button
-                    class="text-gray-950 active:text-gray-300 dark:text-white dark:active:text-gray-700 border border-gray-300 hover:border-gray-950 dark:border-gray-700 dark:hover:border-gray-100 px-3 py-0.5 text-sm rounded-full font-bold outline-2 outline-offset-4"
-                    aria-label="Follow">
-                    <div>Follow</div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="w-full truncate pr-1">
-            <div class="flex items-center justify-between">
-              <a href="/u/kikillo"><span><span data-state="closed">
-                    <div class="mr-8 flex items-center space-x-3">
-                      <img alt="0x06235e" class="size-11 rounded-full border bg-gray-200 dark:border-gray-700"
-                        height="44" loading="lazy"
-                        src="https://ik.imagekit.io/lens/media-snapshot/tr:w-350,h-350,q-80/1bcebec6afbc0ae04142c08fdc0ce6a684fe4ab974f374c54dd2bfa108a8dcce.webp"
-                        width="44" />
-                      <div>
-                        <div class="flex max-w-sm items-center">
-                          <div class="text-md grid">
-                            <div class="truncate font-semibold">Kikillo®</div>
-                          </div>
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                            aria-hidden="true" data-slot="icon" class="text-brand-500 ml-1 size-4">
-                            <path fill-rule="evenodd"
-                              d="M8.603 3.799A4.49 4.49 0 0 1 12 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 0 1 3.498 1.307 4.491 4.491 0 0 1 1.307 3.497A4.49 4.49 0 0 1 21.75 12a4.49 4.49 0 0 1-1.549 3.397 4.491 4.491 0 0 1-1.307 3.497 4.491 4.491 0 0 1-3.497 1.307A4.49 4.49 0 0 1 12 21.75a4.49 4.49 0 0 1-3.397-1.549 4.49 4.49 0 0 1-3.498-1.306 4.491 4.491 0 0 1-1.307-3.498A4.49 4.49 0 0 1 2.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 0 1 1.307-3.497 4.49 4.49 0 0 1 3.497-1.307Zm7.007 6.387a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
-                              clip-rule="evenodd"></path>
-                          </svg>
-                        </div>
-                        <div>
-                          <span class="ld-text-gray-500 text-sm">&#64;kikillo</span>
-                        </div>
-                      </div>
-                    </div>
-                  </span></span></a>
-              <div class="flex items-center space-x-2">
-                <div class="contents">
-                  <button
-                    class="text-gray-950 active:text-gray-300 dark:text-white dark:active:text-gray-700 border border-gray-300 hover:border-gray-950 dark:border-gray-700 dark:hover:border-gray-100 px-3 py-0.5 text-sm rounded-full font-bold outline-2 outline-offset-4"
-                    aria-label="Follow">
-                    <div>Follow</div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="w-full truncate pr-1">
-            <div class="flex items-center justify-between">
-              <a href="/u/horticulture"><span><span data-state="closed">
-                    <div class="mr-8 flex items-center space-x-3">
-                      <img alt="0x0446c4" class="size-11 rounded-full border bg-gray-200 dark:border-gray-700"
-                        height="44" loading="lazy"
-                        src="https://ik.imagekit.io/lens/media-snapshot/tr:w-350,h-350,q-80/57c4839d920fab29b897f2687ee0475256779604bbad755053e6c67028594078.png"
-                        width="44" />
-                      <div>
-                        <div class="flex max-w-sm items-center">
-                          <div class="text-md grid">
-                            <div class="truncate font-semibold">horticulture</div>
-                          </div>
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                            aria-hidden="true" data-slot="icon" class="text-brand-500 ml-1 size-4">
-                            <path fill-rule="evenodd"
-                              d="M8.603 3.799A4.49 4.49 0 0 1 12 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 0 1 3.498 1.307 4.491 4.491 0 0 1 1.307 3.497A4.49 4.49 0 0 1 21.75 12a4.49 4.49 0 0 1-1.549 3.397 4.491 4.491 0 0 1-1.307 3.497 4.491 4.491 0 0 1-3.497 1.307A4.49 4.49 0 0 1 12 21.75a4.49 4.49 0 0 1-3.397-1.549 4.49 4.49 0 0 1-3.498-1.306 4.491 4.491 0 0 1-1.307-3.498A4.49 4.49 0 0 1 2.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 0 1 1.307-3.497 4.49 4.49 0 0 1 3.497-1.307Zm7.007 6.387a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
-                              clip-rule="evenodd"></path>
-                          </svg>
-                        </div>
-                        <div>
-                          <span class="ld-text-gray-500 text-sm">&#64;horticulture</span>
-                        </div>
-                      </div>
-                    </div>
-                  </span></span></a>
-              <div class="flex items-center space-x-2">
-                <div class="contents">
-                  <button
-                    class="text-gray-950 active:text-gray-300 dark:text-white dark:active:text-gray-700 border border-gray-300 hover:border-gray-950 dark:border-gray-700 dark:hover:border-gray-100 px-3 py-0.5 text-sm rounded-full font-bold outline-2 outline-offset-4"
-                    aria-label="Follow">
-                    <div>Follow</div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="w-full truncate pr-1">
-            <div class="flex items-center justify-between">
-              <a href="/u/jewels"><span><span data-state="closed">
-                    <div class="mr-8 flex items-center space-x-3">
-                      <img alt="0x5dbb" class="size-11 rounded-full border bg-gray-200 dark:border-gray-700" height="44"
-                        loading="lazy"
-                        src="https://ik.imagekit.io/lens/media-snapshot/tr:w-350,h-350,q-80/9165a8c659c1fdc8084d192f6e6ad0f68c892d6997f88387174a058ada267c3d.jpg"
-                        width="44" />
-                      <div>
-                        <div class="flex max-w-sm items-center">
-                          <div class="text-md grid">
-                            <div class="truncate font-semibold">cora</div>
-                          </div>
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                            aria-hidden="true" data-slot="icon" class="text-brand-500 ml-1 size-4">
-                            <path fill-rule="evenodd"
-                              d="M8.603 3.799A4.49 4.49 0 0 1 12 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 0 1 3.498 1.307 4.491 4.491 0 0 1 1.307 3.497A4.49 4.49 0 0 1 21.75 12a4.49 4.49 0 0 1-1.549 3.397 4.491 4.491 0 0 1-1.307 3.497 4.491 4.491 0 0 1-3.497 1.307A4.49 4.49 0 0 1 12 21.75a4.49 4.49 0 0 1-3.397-1.549 4.49 4.49 0 0 1-3.498-1.306 4.491 4.491 0 0 1-1.307-3.498A4.49 4.49 0 0 1 2.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 0 1 1.307-3.497 4.49 4.49 0 0 1 3.497-1.307Zm7.007 6.387a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
-                              clip-rule="evenodd"></path>
-                          </svg>
-                        </div>
-                        <div>
-                          <span class="ld-text-gray-500 text-sm">&#64;jewels</span>
-                        </div>
-                      </div>
-                    </div>
-                  </span></span></a>
-              <div class="flex items-center space-x-2">
-                <div class="contents">
-                  <button
-                    class="text-gray-950 active:text-gray-300 dark:text-white dark:active:text-gray-700 border border-gray-300 hover:border-gray-950 dark:border-gray-700 dark:hover:border-gray-100 px-3 py-0.5 text-sm rounded-full font-bold outline-2 outline-offset-4"
-                    aria-label="Follow">
-                    <div>Follow</div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+
+
+
         </aside>
+
 
         <footer class="top-20 sticky mt-4 flex flex-wrap gap-x-[12px] gap-y-2 px-3 text-sm lg:px-0">
           <span class="ld-text-gray-500 font-bold">© 2024 Hey.xyz</span><a class="outline-offset-4"

@@ -27,15 +27,17 @@ export interface ITweetResponse {
   has_previous: boolean;
 }
 
+
+
 export interface IGetAllUsers {
-  users: User[]
+  users: IGetAllUsersData[]
   total_pages: number
   current_page: number
   has_next: boolean
   has_previous: boolean
 }
 
-export interface User {
+export interface IGetAllUsersData {
   id: string
   username: string
   name: string

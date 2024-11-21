@@ -123,7 +123,7 @@ export class GetApiService {
       );
   }
 
-  // get tweets
+  //get all users
   getAllUsers(
     page: number = 1,
     per_page: number = 10,
