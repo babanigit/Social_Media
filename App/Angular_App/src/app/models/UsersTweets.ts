@@ -1,4 +1,3 @@
-// src/app/interfaces/tweet.interface.ts
 
 export interface ITweet {
   id: string;
@@ -27,3 +26,21 @@ export interface ITweetResponse {
   has_next: boolean;
   has_previous: boolean;
 }
+
+export interface IGetAllUsers {
+  users: User[]
+  total_pages: number
+  current_page: number
+  has_next: boolean
+  has_previous: boolean
+}
+
+export interface User {
+  id: string
+  username: string
+  name: string
+  profile_image: string
+  followers_count: number
+  following_count: number
+}
+

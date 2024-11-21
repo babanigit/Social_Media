@@ -7,6 +7,7 @@ import { ILoggedInUser } from '../models/LoggedInUser';
 
 import { isPlatformBrowser } from '@angular/common';
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { IGetAllUsers } from '../models/UsersTweets';
 
 
 @Injectable({
@@ -114,6 +115,34 @@ export class GetApiService {
     }
 
     return this.http.get<IGetTweets>(this.apiUrl + '/tweets/', { params })
+      .pipe(
+        catchError((error) => {
+          console.error('Error loading get Tweets :', error);
+          throw error;
+        })
+      );
+  }
+
+  // get tweets
+  getAllUsers(
+    page: number = 1,
+    per_page: number = 10,
+    user_id?: number,
+    following_only: boolean = false
+  ): Observable<IGetAllUsers> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('per_page', per_page.toString());
+
+    if (user_id) {
+      params = params.set('user_id', user_id.toString());
+    }
+
+    if (following_only) {
+      params = params.set('following_only', 'true');
+    }
+
+    return this.http.get<IGetAllUsers>(this.apiUrl + '/getUsers/', { params })
       .pipe(
         catchError((error) => {
           console.error('Error loading get Tweets :', error);
