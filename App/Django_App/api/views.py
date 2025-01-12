@@ -240,6 +240,55 @@ def login(request):
 
 
 @csrf_exempt
+def manage_profile_image(request):
+    if request.method == "POST":
+        try:
+            if not request.user.is_authenticated:
+                return JsonResponse({"error": "User not authenticated"}, status=401)
+
+            user = request.user  # Assuming authentication middleware sets request.user
+            if request.FILES.get("profile_image"):
+                profile_image = request.FILES["profile_image"]
+                user.profile_image = profile_image
+                user.save()
+
+                return JsonResponse(
+                    {
+                        "message": "Profile image updated successfully",
+                        "profile_image": user.profile_image.url,
+                    },
+                    status=200,
+                )
+            else:
+                return JsonResponse({"error": "No profile image provided"}, status=400)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    elif request.method == "DELETE":
+        try:
+            if not request.user.is_authenticated:
+                return JsonResponse({"error": "User not authenticated"}, status=401)
+
+            user = request.user  # Assuming authentication middleware sets request.user
+            if user.profile_image:
+                user.profile_image.delete()  # Delete the image file
+                user.profile_image = None
+                user.save()
+
+                return JsonResponse(
+                    {"message": "Profile image removed successfully"}, status=200
+                )
+            else:
+                return JsonResponse({"error": "No profile image to remove"}, status=400)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Method not allowed"}, status=405)
+
+
+@csrf_exempt
 def logout(request):
     if request.method == "POST":
         response = JsonResponse({"message": "Logged out successfully"})
@@ -724,14 +773,9 @@ def like_tweet(request, tweet_id):
     return JsonResponse({"error": "Method not allowed"}, status=405)
 
 
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from django.utils.dateparse import parse_datetime
-import json
-from .models import Tweet, Comment, User
-
 @csrf_exempt
-def post_get_tweet_comments(request, tweet_id):
+def post_get_put_delete_tweet_comments(request, tweet_id):
+    
     if request.method == "GET":
         try:
             tweet = Tweet.objects.get(id=tweet_id)
@@ -782,7 +826,9 @@ def post_get_tweet_comments(request, tweet_id):
 
             # Validate the required fields
             if not content or not user_id:
-                return JsonResponse({"error": "Content and user_id are required"}, status=400)
+                return JsonResponse(
+                    {"error": "Content and user_id are required"}, status=400
+                )
 
             # Fetch the user and tweet
             user = User.objects.get(id=user_id)
@@ -818,6 +864,98 @@ def post_get_tweet_comments(request, tweet_id):
             return JsonResponse({"error": "User not found"}, status=404)
         except Tweet.DoesNotExist:
             return JsonResponse({"error": "Tweet not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    elif request.method == "PUT":
+        try:
+            # Parse the incoming JSON payload
+            data = json.loads(request.body)
+            comment_id = data.get("comment_id")
+            user_id = data.get("user_id")
+            content = data.get("content")
+
+            # Validate the required fields
+            if not all([comment_id, user_id, content]):
+                return JsonResponse(
+                    {"error": "Comment ID, user ID, and content are required"},
+                    status=400,
+                )
+
+            # Fetch the comment and validate ownership
+            comment = Comment.objects.get(id=comment_id, tweet_id=tweet_id)
+            if comment.user.id != int(user_id):
+                return JsonResponse(
+                    {"error": "You are not authorized to update this comment"},
+                    status=403,
+                )
+
+            # Update the comment
+            comment.content = content
+            comment.save()
+
+            # Return the updated comment data
+            comment_data = {
+                "id": str(comment.id),
+                "content": comment.content,
+                "created_at": comment.created_at,
+                "user": {
+                    "id": str(comment.user.id),
+                    "username": comment.user.username,
+                    "name": comment.user.name,
+                    "profile_image": (
+                        comment.user.profile_image.url
+                        if comment.user.profile_image
+                        else None
+                    ),
+                },
+                "likes_count": comment.likes.count(),
+                "liked_by_user_ids": [
+                    str(user_id)
+                    for user_id in comment.likes.values_list("id", flat=True)
+                ],
+                "dislikes_count": comment.dislikes.count(),
+                "disliked_by_user_ids": [
+                    str(user_id)
+                    for user_id in comment.dislikes.values_list("id", flat=True)
+                ],
+            }
+
+            return JsonResponse({"comment": comment_data}, status=200)
+
+        except Comment.DoesNotExist:
+            return JsonResponse({"error": "Comment not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    elif request.method == "DELETE":
+        try:
+            # Parse the incoming JSON payload
+            data = json.loads(request.body)
+            comment_id = data.get("comment_id")
+            user_id = data.get("user_id")
+
+            # Validate the required fields
+            if not comment_id or not user_id:
+                return JsonResponse(
+                    {"error": "Comment ID and user ID are required"}, status=400
+                )
+
+            # Fetch the comment and validate ownership
+            comment = Comment.objects.get(id=comment_id, tweet_id=tweet_id)
+            if comment.user.id != int(user_id):
+                return JsonResponse(
+                    {"error": "You are not authorized to delete this comment"},
+                    status=403,
+                )
+
+            # Delete the comment
+            comment.delete()
+
+            return JsonResponse({"message": "Comment deleted successfully"}, status=200)
+
+        except Comment.DoesNotExist:
+            return JsonResponse({"error": "Comment not found"}, status=404)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
 
