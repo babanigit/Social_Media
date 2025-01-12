@@ -23,20 +23,20 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Set Secure flag and SameSite based on environment
-if os.getenv('DJANGO_ENV') == 'production':
+if os.getenv("DJANGO_ENV") == "production":
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    SESSION_COOKIE_SAMESITE = 'None'
-    CSRF_COOKIE_SAMESITE = 'None'
+    SESSION_COOKIE_SAMESITE = "None"
+    CSRF_COOKIE_SAMESITE = "None"
 else:
     SESSION_COOKIE_SECURE = False
     CSRF_COOKIE_SECURE = False
-    SESSION_COOKIE_SAMESITE = 'Lax'  # Or 'None' for testing cross-site cookies
-    CSRF_COOKIE_SAMESITE = 'Lax'  # Or 'None' for testing cross-site cookies
+    SESSION_COOKIE_SAMESITE = "Lax"  # Or 'None' for testing cross-site cookies
+    CSRF_COOKIE_SAMESITE = "Lax"  # Or 'None' for testing cross-site cookies
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -52,7 +52,7 @@ SECRET_KEY = "django-insecure-!@iz$6o=sufd+-t4z+c#)ghjblnown@=kvj_lqw2p5gngi))a7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app']
+ALLOWED_HOSTS = [".vercel.app"]
 
 # settings.py
 MAX_TWEET_LENGTH = 280  # or your desired length
@@ -85,6 +85,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",
+    
+    # app
     "api",
 ]
 
@@ -99,9 +101,8 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -113,36 +114,36 @@ MIDDLEWARE = [
 
 # Allow only the frontend URL (replace with your frontend domain if deployed)
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:4200',  # Assuming your Angular app runs on port 4200
+    "http://localhost:4200",  # Assuming your Angular app runs on port 4200
 ]
 
 # Allow credentials to be passed
 CORS_ALLOW_CREDENTIALS = True
 
 # If you need to expose any specific headers (optional)
-CORS_EXPOSE_HEADERS = ['Content-Type', 'Authorization']
+CORS_EXPOSE_HEADERS = ["Content-Type", "Authorization"]
 
 # Allow specific HTTP methods (optional)
 CORS_ALLOW_METHODS = [
-    'GET',
-    'POST',
-    'PUT',
-    'PATCH',
-    'DELETE',
-    'OPTIONS',
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
 ]
 
 # Allow specific headers in requests (optional)
 CORS_ALLOW_HEADERS = [
-    'authorization',
-    'content-type',
-    'accept',
-    'origin',
-    'x-csrftoken',
-    'x-requested-with',
+    "authorization",
+    "content-type",
+    "accept",
+    "origin",
+    "x-csrftoken",
+    "x-requested-with",
 ]
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
 
 ROOT_URLCONF = "django_app.urls"
@@ -171,8 +172,12 @@ WSGI_APPLICATION = "django_app.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "chatterbox",
+        "USER": "postgres",
+        "PASSWORD": "admin",
+        "HOST": "localhost",
+        "PORT": "5432",
     }
 }
 

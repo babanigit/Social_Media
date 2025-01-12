@@ -724,6 +724,12 @@ def like_tweet(request, tweet_id):
     return JsonResponse({"error": "Method not allowed"}, status=405)
 
 
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.utils.dateparse import parse_datetime
+import json
+from .models import Tweet, Comment, User
+
 @csrf_exempt
 def post_get_tweet_comments(request, tweet_id):
     if request.method == "GET":
@@ -751,17 +757,65 @@ def post_get_tweet_comments(request, tweet_id):
                         str(user_id)
                         for user_id in comment.likes.values_list("id", flat=True)
                     ],
-                    "dislikes_count": comment.dislikes.count(),  # Total dislikes for the comment
+                    "dislikes_count": comment.dislikes.count(),
                     "disliked_by_user_ids": [
                         str(user_id)
                         for user_id in comment.dislikes.values_list("id", flat=True)
-                    ],  # List of user IDs who disliked the comment
+                    ],
                 }
                 for comment in comments
             ]
 
             return JsonResponse({"comments": comments_data}, status=200)
 
+        except Tweet.DoesNotExist:
+            return JsonResponse({"error": "Tweet not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    elif request.method == "POST":
+        try:
+            # Parse the incoming JSON payload
+            data = json.loads(request.body)
+            content = data.get("content")
+            user_id = data.get("user_id")
+
+            # Validate the required fields
+            if not content or not user_id:
+                return JsonResponse({"error": "Content and user_id are required"}, status=400)
+
+            # Fetch the user and tweet
+            user = User.objects.get(id=user_id)
+            tweet = Tweet.objects.get(id=tweet_id)
+
+            # Create a new comment
+            comment = Comment.objects.create(tweet=tweet, user=user, content=content)
+
+            # Return the newly created comment data
+            comment_data = {
+                "id": str(comment.id),
+                "content": comment.content,
+                "created_at": comment.created_at,
+                "user": {
+                    "id": str(comment.user.id),
+                    "username": comment.user.username,
+                    "name": comment.user.name,
+                    "profile_image": (
+                        comment.user.profile_image.url
+                        if comment.user.profile_image
+                        else None
+                    ),
+                },
+                "likes_count": comment.likes.count(),
+                "liked_by_user_ids": [],
+                "dislikes_count": comment.dislikes.count(),
+                "disliked_by_user_ids": [],
+            }
+
+            return JsonResponse({"comment": comment_data}, status=201)
+
+        except User.DoesNotExist:
+            return JsonResponse({"error": "User not found"}, status=404)
         except Tweet.DoesNotExist:
             return JsonResponse({"error": "Tweet not found"}, status=404)
         except Exception as e:
