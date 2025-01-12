@@ -14,18 +14,17 @@ from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404
 
 
-def get_authenticated_user(request):
+def get_Token_Helper_function(request):
     """Helper function to get authenticated user from token"""
     token = request.COOKIES.get("auth_token") or request.headers.get(
         "Authorization", ""
     ).replace("Token ", "")
     if not token:
-        raise ValidationError("Authentication required")
-
+        raise ValidationError("Authentication required [from get_Token_Helper_function]")
     try:
         return User.objects.get(token=token)
     except User.DoesNotExist:
-        raise ValidationError("Invalid token")
+        raise ValidationError("Invalid token [get_Token_Helper_function]")
 
 
 def paginate_queryset(queryset, request):
@@ -127,6 +126,59 @@ def get_loggedIn_user(request):
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Method not allowed"}, status=405)
+
+
+@csrf_exempt
+def manage_profile_image(request):
+    # Authenticate the user using the token
+    token = request.COOKIES.get("auth_token")
+    if not token:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Token "):
+            token = auth_header.split(" ")[1]
+        else:
+            return JsonResponse({"error": "Authentication required"}, status=401)
+
+    try:
+        # Fetch the user associated with the token
+        user = User.objects.get(
+            token=token
+        )  # Ensure `token` is a valid field in your User model
+
+        if request.method == "POST":
+            if request.FILES.get("profile_image"):
+                profile_image = request.FILES["profile_image"]
+                user.profile_image = profile_image
+                user.save()
+
+                return JsonResponse(
+                    {
+                        "message": "Profile image updated successfully",
+                        "profile_image": user.profile_image.url,
+                    },
+                    status=200,
+                )
+            else:
+                return JsonResponse({"error": "No profile image provided"}, status=400)
+
+        elif request.method == "DELETE":
+            if user.profile_image:
+                user.profile_image.delete()  # Delete the image file
+                user.profile_image = None
+                user.save()
+
+                return JsonResponse(
+                    {"message": "Profile image removed successfully"}, status=200
+                )
+            else:
+                return JsonResponse({"error": "No profile image to remove"}, status=400)
+
+        return JsonResponse({"error": "Method not allowed"}, status=405)
+
+    except User.DoesNotExist:
+        return JsonResponse({"error": "Invalid token or user not found"}, status=401)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
 
 
 @csrf_exempt
@@ -240,55 +292,6 @@ def login(request):
 
 
 @csrf_exempt
-def manage_profile_image(request):
-    if request.method == "POST":
-        try:
-            if not request.user.is_authenticated:
-                return JsonResponse({"error": "User not authenticated"}, status=401)
-
-            user = request.user  # Assuming authentication middleware sets request.user
-            if request.FILES.get("profile_image"):
-                profile_image = request.FILES["profile_image"]
-                user.profile_image = profile_image
-                user.save()
-
-                return JsonResponse(
-                    {
-                        "message": "Profile image updated successfully",
-                        "profile_image": user.profile_image.url,
-                    },
-                    status=200,
-                )
-            else:
-                return JsonResponse({"error": "No profile image provided"}, status=400)
-
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
-
-    elif request.method == "DELETE":
-        try:
-            if not request.user.is_authenticated:
-                return JsonResponse({"error": "User not authenticated"}, status=401)
-
-            user = request.user  # Assuming authentication middleware sets request.user
-            if user.profile_image:
-                user.profile_image.delete()  # Delete the image file
-                user.profile_image = None
-                user.save()
-
-                return JsonResponse(
-                    {"message": "Profile image removed successfully"}, status=200
-                )
-            else:
-                return JsonResponse({"error": "No profile image to remove"}, status=400)
-
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
-
-    return JsonResponse({"error": "Method not allowed"}, status=405)
-
-
-@csrf_exempt
 def logout(request):
     if request.method == "POST":
         response = JsonResponse({"message": "Logged out successfully"})
@@ -303,7 +306,7 @@ def create_tweet(request):
 
         try:
             # Verify the user by matching the token
-            user = get_authenticated_user(request)
+            user = get_Token_Helper_function(request)
 
             # Check content type and parse the data accordingly
             if request.content_type == "application/json":
@@ -775,7 +778,7 @@ def like_tweet(request, tweet_id):
 
 @csrf_exempt
 def post_get_put_delete_tweet_comments(request, tweet_id):
-    
+
     if request.method == "GET":
         try:
             tweet = Tweet.objects.get(id=tweet_id)
