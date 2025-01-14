@@ -20,11 +20,11 @@ def get_Token_Helper_function(request):
         "Authorization", ""
     ).replace("Token ", "")
     if not token:
-        raise ValidationError("Authentication required [from get_Token_Helper_function]")
+        raise ValidationError("Authentication required [from get_Token_Helper_functions]")
     try:
         return User.objects.get(token=token)
     except User.DoesNotExist:
-        raise ValidationError("Invalid token [get_Token_Helper_function]")
+        raise ValidationError("Invalid token [get_Token_Helper_functions]")
 
 
 def paginate_queryset(queryset, request):

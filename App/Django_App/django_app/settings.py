@@ -85,7 +85,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",
-    
     # app
     "api",
 ]
@@ -112,36 +111,49 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-# Allow only the frontend URL (replace with your frontend domain if deployed)
+
+# CORS Settings
+CORS_ORIGIN_ALLOW_ALL = False  # Make sure this is False
+
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4200",  # Assuming your Angular app runs on port 4200
+    "http://localhost:4200",
+    "http://127.0.0.1:4200",
 ]
 
-# Allow credentials to be passed
 CORS_ALLOW_CREDENTIALS = True
 
-# If you need to expose any specific headers (optional)
-CORS_EXPOSE_HEADERS = ["Content-Type", "Authorization"]
-
-# Allow specific HTTP methods (optional)
 CORS_ALLOW_METHODS = [
+    "DELETE",
     "GET",
+    "OPTIONS",
+    "PATCH",
     "POST",
     "PUT",
-    "PATCH",
-    "DELETE",
-    "OPTIONS",
 ]
 
-# Allow specific headers in requests (optional)
 CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
     "authorization",
     "content-type",
-    "accept",
+    "dnt",
     "origin",
+    "user-agent",
     "x-csrftoken",
     "x-requested-with",
 ]
+
+# Add these new settings
+CORS_EXPOSE_HEADERS = [
+    "content-type",
+    "x-csrftoken",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:4200",
+    "http://127.0.0.1:4200",
+]
+
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
@@ -222,6 +234,3 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWS_CREDENTIALS = True
