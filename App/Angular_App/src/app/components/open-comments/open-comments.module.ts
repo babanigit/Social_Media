@@ -9,9 +9,11 @@ const routes: Routes = [{ path: '', component: OpenCommentsComponent }];
 
 @NgModule({
   declarations: [OpenCommentsComponent],
-  imports: [CommonModule, RouterModule.forChild(routes),
+  imports: [
+    CommonModule,
+    RouterModule.forChild(routes),
     TimeAgoPipe,
-    CustomDateFormatPipe
+    CustomDateFormatPipe,
   ],
   exports: [OpenCommentsComponent],
 })

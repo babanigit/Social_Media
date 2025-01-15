@@ -136,4 +136,9 @@ export class MainContentComponent implements OnInit {
     // Navigate to the open-comments route with the specific post ID
     this.router.navigate(['/posts', postId]);
   }
+
+  openProfile(postId: string): void {
+    // Navigate to the open-comments route with the specific post ID
+    this.router.navigate(['/profile', postId]);
+  }
 }

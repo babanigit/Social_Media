@@ -37,12 +37,14 @@
                         <div class="w-[calc(100%-55px)]">
                           <div class="flex w-full items-start justify-between">
                             <div class="flex max-w-sm flex-wrap items-center">
-                              <a class="truncate outline-none hover:underline focus:underline"
-                                href="/u/andresbriceno"><span><span data-state="closed"><span
-                                      class="font-semibold">{{data.user.name}}
+
+                              <a (click)="openProfile(data.id)"
+                                class="truncate outline-none hover:underline focus:underline"><span><span
+                                    data-state="closed"><span class="font-semibold">{{data.user.name}}
                                     </span></span></span></a><a
-                                class="truncate outline-none hover:underline focus:underline"
-                                href="/u/andresbriceno"><span><span data-state="closed"><span
+                                    (click)="openProfile(data.id)"
+                                class="truncate outline-none hover:underline focus:underline"><span><span
+                                    data-state="closed"><span
                                       class="ld-text-gray-500 ml-1 truncate text-sm">&#64;{{data.user.username}}</span></span></span></a><svg
                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
                                 aria-hidden="true" data-slot="icon" class="text-brand-500 ml-1 size-4">
