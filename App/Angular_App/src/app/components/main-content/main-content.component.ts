@@ -51,9 +51,7 @@ export class MainContentComponent implements OnInit {
 
     this.tweetService.getTweets(page, 10, userId, followingOnly).subscribe({
       next: (response: IGetTweets) => {
-        // console.log("the get tweets are ", response  )
-        // this.image = response.tweets.
-        this.tweets = response.tweets; // Update to use tweets
+        this.tweets = response.tweets;
         this.currentPage = response.current_page;
         this.totalPages = response.total_pages;
         this.hasNext = response.has_next;
@@ -133,12 +131,10 @@ export class MainContentComponent implements OnInit {
   }
 
   openComments(postId: string): void {
-    // Navigate to the open-comments route with the specific post ID
     this.router.navigate(['/posts', postId]);
   }
 
   openProfile(postId: string): void {
-    // Navigate to the open-comments route with the specific post ID
     this.router.navigate(['/profile', postId]);
   }
 }

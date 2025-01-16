@@ -9,6 +9,8 @@
 <section>
   <div class="container mx-auto mt-8 mb-2 max-w-screen-xl grow px-0 sm:px-5">
     <div class="grid grid-cols-11 lg:gap-8">
+
+      <!-- left side -->
       <div class="col-span-11 mb-5 md:col-span-11 lg:col-span-7 space-y-5">
         <div
           class="rounded-none border-x-0 sm:rounded-xl sm:border-x border bg-white dark:border-gray-700 dark:bg-black">
@@ -41,8 +43,7 @@
                               <a (click)="openProfile(data.id)"
                                 class="truncate outline-none hover:underline focus:underline"><span><span
                                     data-state="closed"><span class="font-semibold">{{data.user.name}}
-                                    </span></span></span></a><a
-                                    (click)="openProfile(data.id)"
+                                    </span></span></span></a><a (click)="openProfile(data.id)"
                                 class="truncate outline-none hover:underline focus:underline"><span><span
                                     data-state="closed"><span
                                       class="ld-text-gray-500 ml-1 truncate text-sm">&#64;{{data.user.username}}</span></span></span></a><svg
@@ -79,7 +80,6 @@
                             </div>
 
                             <!-- if re posted -->
-
                             <div *ngIf="false"
                               class="rounded-xl border bg-white dark:border-gray-700 dark:bg-black mt-3 cursor-auto">
                               <article
@@ -219,8 +219,11 @@
           </div>
         </div>
       </div>
+
+      <!-- right side -->
       <div class="col-span-11 md:col-span-11 lg:col-span-4">
 
+        <!-- if not logged in the it will show singup -->
         <aside *ngIf="!user"
           class="rounded-none border-x-0 sm:rounded-xl sm:border-x border bg-white dark:border-gray-700 dark:bg-black mb-4 space-y-4 p-5">
           <img alt="Dizzy emoji" class="mx-auto size-14" src="https://hey-assets.b-cdn.net/images/emojis/dizzy.png" />
@@ -235,6 +238,8 @@
           </div>
         </aside>
 
+
+        <!-- staff pick , suggest profiles -->
         <aside
           class="rounded-none border-x-0 sm:rounded-xl sm:border-x border bg-white dark:border-gray-700 dark:bg-black mb-4 space-y-4 p-5">
           <h5 class="text-lg font-bold">Staff Picks</h5>
@@ -268,23 +273,11 @@
               </div>
             </div>
           </div>
-
-
-
         </aside>
 
 
-        <footer class="top-20 sticky mt-4 flex flex-wrap gap-x-[12px] gap-y-2 px-3 text-sm lg:px-0">
-          <span class="ld-text-gray-500 font-bold">© 2024 Hey.xyz</span><a class="outline-offset-4"
-            rel="noreferrer noopener" href="/terms">Terms</a><a class="outline-offset-4" rel="noreferrer noopener"
-            href="/privacy">Privacy</a><a class="outline-offset-4" rel="noreferrer noopener" target="_blank"
-            href="https://hey.xyz/discord">Discord</a><a class="outline-offset-4" rel="noreferrer noopener"
-            href="/u/hey">Hey</a><a class="outline-offset-4" rel="noreferrer noopener" target="_blank"
-            href="https://status.hey.xyz">Status</a><a class="outline-offset-4" rel="noreferrer noopener"
-            target="_blank" href="https://feedback.hey.xyz">Feedback</a><a class="outline-offset-4"
-            rel="noreferrer noopener" href="/rules">Rules</a><a class="outline-offset-4" rel="noreferrer noopener"
-            href="/support">Support</a>
-        </footer>
+        <!-- footer -->
+        <app-footer />
 
       </div>
     </div>
