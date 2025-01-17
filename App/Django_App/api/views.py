@@ -968,6 +968,10 @@ def post_get_put_delete_tweet_comments(request, tweet_id):
 @csrf_exempt
 def like_comment(request, comment_id):
     if request.method == "POST":
+        
+         # Simulate a 500 Internal Server Error
+        # return JsonResponse({"error": "Simulated server error"}, status=500)
+        
         token = request.COOKIES.get("auth_token")
         if not token:
             auth_header = request.headers.get("Authorization")
@@ -991,6 +995,7 @@ def like_comment(request, comment_id):
             else:
                 comment.likes.add(user)
                 action = "liked"
+                
 
             return JsonResponse(
                 {
@@ -1009,8 +1014,12 @@ def like_comment(request, comment_id):
 
         except Comment.DoesNotExist:
             return JsonResponse({"error": "Comment not found"}, status=404)
+        
+        except User.DoesNotExist:
+            return JsonResponse({"error": "user not found"}, status=404)
+        
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+            return JsonResponse({"error": "[Exception error]:- " + str(e)}, status=500)
 
     return JsonResponse({"error": "Method not allowed"}, status=405)
 

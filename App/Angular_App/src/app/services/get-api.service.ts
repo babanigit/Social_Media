@@ -1,6 +1,6 @@
 // import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, Observable, throwError, timeout } from 'rxjs';
 import { IGetTweets } from '../models/GetTweets';
 import { ILoginResponse, IRegisterResponse } from '../models/RegAndLog';
 import { ILoggedInUser } from '../models/LoggedInUser';
@@ -9,28 +9,31 @@ import { isPlatformBrowser } from '@angular/common';
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { IGetAllUsers } from '../models/UsersTweets';
 
-
 @Injectable({
   providedIn: 'root',
 })
 export class GetApiService {
-
   private apiUrl = 'http://localhost:8000/api'; // Replace with your Django API URL
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object, private http: HttpClient) { }
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private http: HttpClient
+  ) {}
 
-  // token function
+  // get token from local storage or cookie
   getTokenFromCookieOrLocalStorage(): string | null {
     // Check if we are running in the browser
     if (!isPlatformBrowser(this.platformId)) {
-      console.warn('localStorage and document.cookie are not available in this environment.');
+      console.warn(
+        'localStorage and document.cookie are not available in this environment.'
+      );
       return null; // Return null if not in the browser
     }
 
     // Attempt to retrieve the token from local storage first
     const tokenFromLocalStorage = localStorage.getItem('auth_token');
     if (tokenFromLocalStorage) {
-      console.log("got token from local storage")
+      // console.log('got token from local storage');
       return tokenFromLocalStorage;
     }
 
@@ -41,22 +44,30 @@ export class GetApiService {
       for (const cookie of cookies) {
         const [key, value] = cookie.split('=');
         if (key.trim() === 'auth_token') {
-          console.log("got token from cookie")
+          // console.log('got token from cookie');
           return decodeURIComponent(value); // Return the token after decoding
         }
       }
     } catch (error) {
-      console.error('Error retrieving auth token from cookies:', error);
+      console.error(
+        '[get-api-serV-error]:- Error retrieving auth token from cookies:',
+        error
+      );
     }
 
     // If no token is found in either local storage or cookies, log the error
-    console.error('No auth token found. Authorization token missing or expired.');
+    console.error(
+      '[get-api-serV-error]:- No auth token found. Authorization token missing or expired.'
+    );
     return null;
   }
 
   // register and login
   register(userData: FormData): Observable<IRegisterResponse> {
-    return this.http.post<IRegisterResponse>(this.apiUrl + '/register/', userData);
+    return this.http.post<IRegisterResponse>(
+      this.apiUrl + '/register/',
+      userData
+    );
   }
 
   login(username: string, password: string): Observable<ILoginResponse> {
@@ -73,23 +84,27 @@ export class GetApiService {
 
     // Check if the token is available
     if (!token) {
-      console.error('Authorization token missing');
+      console.error('[get-api-serV-error]:- Authorization token missing');
       return throwError('Authorization token missing');
     }
 
     // Set the Authorization header
     const headers = new HttpHeaders({
-      'Authorization': `Token ${token}`
+      Authorization: `Token ${token}`,
     });
 
     // Create query parameters for pagination
     const params = new HttpParams().set('page', page.toString());
 
     // Make the GET request to fetch the logged-in user data
-    return this.http.get<ILoggedInUser>(this.apiUrl + '/user/', { headers, params })
+    return this.http
+      .get<ILoggedInUser>(this.apiUrl + '/user/', { headers, params })
       .pipe(
         catchError((error) => {
-          console.error('Error loading logged in User :', error);
+          console.error(
+            '[get-api-serV-error]:- Error loading logged in User :',
+            error
+          );
           throw error;
         })
       );
@@ -114,13 +129,15 @@ export class GetApiService {
       params = params.set('following_only', 'true');
     }
 
-    return this.http.get<IGetTweets>(this.apiUrl + '/tweets/', { params })
-      .pipe(
-        catchError((error) => {
-          console.error('Error loading get Tweets :', error);
-          throw error;
-        })
-      );
+    return this.http.get<IGetTweets>(this.apiUrl + '/tweets/', { params }).pipe(
+      catchError((error) => {
+        console.error(
+          '[get-api-serV-error]:- Error loading get Tweets :',
+          error
+        );
+        throw error;
+      })
+    );
   }
 
   //get all users
@@ -142,10 +159,14 @@ export class GetApiService {
       params = params.set('following_only', 'true');
     }
 
-    return this.http.get<IGetAllUsers>(this.apiUrl + '/getUsers/', { params })
+    return this.http
+      .get<IGetAllUsers>(this.apiUrl + '/getUsers/', { params })
       .pipe(
         catchError((error) => {
-          console.error('Error loading get Tweets :', error);
+          console.error(
+            '[get-api-serV-error]:- Error loading get Tweets :',
+            error
+          );
           throw error;
         })
       );
@@ -155,25 +176,26 @@ export class GetApiService {
     const token = this.getTokenFromCookieOrLocalStorage();
 
     if (!token) {
-      console.error('Authorization token missing');
+      console.error('[get-api-serV-error]:- Authorization token missing');
       return throwError('Authorization token missing');
     }
 
     const headers = new HttpHeaders({
-      'Authorization': `Token ${token}`
+      Authorization: `Token ${token}`,
     });
 
-    return this.http.get(`${this.apiUrl}/tweet/${tweetId}/tweet`)
-      .pipe(
-        catchError((error) => {
-          console.error('Error loading like get tweet by id :', error);
-          throw error;
-        })
-      );
+    return this.http.get(`${this.apiUrl}/tweet/${tweetId}/tweet`).pipe(
+      catchError((error) => {
+        console.error(
+          '[get-api-serV-error]:- Error loading like get tweet by id :',
+          error
+        );
+        throw error;
+      })
+    );
   }
 
   createTweet(content: string, image?: File): Observable<any> {
-
     const formData = new FormData();
     formData.append('content', content);
     if (image) {
@@ -183,18 +205,22 @@ export class GetApiService {
     const token = this.getTokenFromCookieOrLocalStorage();
 
     if (!token) {
-      console.error('Authorization token missing');
+      console.error('[get-api-serV-error]:- Authorization token missing');
       return throwError('Authorization token missing');
     }
 
     const headers = new HttpHeaders({
-      'Authorization': `Token ${token}`
+      Authorization: `Token ${token}`,
     });
 
-    return this.http.post(this.apiUrl + '/tweets/create/', formData, { headers })
+    return this.http
+      .post(this.apiUrl + '/tweets/create/', formData, { headers })
       .pipe(
         catchError((error) => {
-          console.error('Error loading create Tweet :', error);
+          console.error(
+            '[get-api-serV-error]:- Error loading create Tweet :',
+            error
+          );
           throw error;
         })
       );
@@ -204,18 +230,22 @@ export class GetApiService {
     const token = this.getTokenFromCookieOrLocalStorage();
 
     if (!token) {
-      console.error('Authorization token missing');
+      console.error('[get-api-serV-error]:- Authorization token missing');
       return throwError('Authorization token missing');
     }
 
     const headers = new HttpHeaders({
-      'Authorization': `Token ${token}`
+      Authorization: `Token ${token}`,
     });
 
-    return this.http.post(`${this.apiUrl}/tweets/${tweetId}/like/`, null, { headers })
+    return this.http
+      .post(`${this.apiUrl}/tweets/${tweetId}/like/`, null, { headers })
       .pipe(
         catchError((error) => {
-          console.error('Error loading like tweet :', error);
+          console.error(
+            '[get-api-serV-error]:- Error loading like tweet :',
+            error
+          );
           throw error;
         })
       );
@@ -223,10 +253,62 @@ export class GetApiService {
 
   getTweetComments(tweetId: string): Observable<any> {
     const url = `${this.apiUrl}/tweets/${tweetId}/postGetComments/`;
-    return this.http.get(url)
+    return this.http.get(url).pipe(
+      catchError((error) => {
+        console.error(
+          '[get-api-serV-error]:- Error loading get Tweet Comments :',
+          error
+        );
+        throw error;
+      })
+    );
+  }
+
+  likeComment(tweetId: string): Observable<any> {
+    const token = this.getTokenFromCookieOrLocalStorage();
+
+    if (!token) {
+      console.error('[get-api-serV-error]:- Authorization token missing');
+      return throwError('Authorization token missing');
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Token ${token}`,
+    });
+
+    return this.http
+      .post(`${this.apiUrl}/tweets/${tweetId}/likeComment/`, null, { headers })
+      .pipe(
+        // timeout(100), // Simulate a request timeout after 100ms
+        catchError((error) => {
+          console.error('[get-api-serV-error]:- ', error);
+          throw error;
+        })
+      );
+  }
+
+  dislikeComment(tweetId: string): Observable<any> {
+    const token = this.getTokenFromCookieOrLocalStorage();
+
+    if (!token) {
+      console.error('[get-api-serV-error]:- Authorization token missing');
+      return throwError('Authorization token missing');
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Token ${token}`,
+    });
+
+    return this.http
+      .post(`${this.apiUrl}/tweets/${tweetId}/dislikeComments/`, null, {
+        headers,
+      })
       .pipe(
         catchError((error) => {
-          console.error('Error loading get Tweet Comments :', error);
+          console.error(
+            '[get-api-serV-error]:- Error loading like tweet :',
+            error
+          );
           throw error;
         })
       );
@@ -242,5 +324,4 @@ export class GetApiService {
   //     localStorage.setItem('auth_token', token);
   //   }
   // }
-
 }
