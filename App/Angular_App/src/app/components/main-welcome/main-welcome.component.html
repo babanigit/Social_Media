@@ -1,3 +1,6 @@
+<app-loading-spinner *ngIf="isLoading" />
+
+
 <div class="divider py-12">
   <div class="mx-auto flex w-full max-w-screen-xl items-center px-5 py-8 sm:py-12">
     <img alt="Hey Logo" class="mr-5 size-24 sm:mr-8 sm:size-36" src="assets/logo.png">
@@ -32,8 +35,7 @@
         <div class="space-y-3 text-center">
           <div class="font-bold">
 
-            <div *ngIf="loading">Loading...</div>
-            <div *ngIf="error">{{ error }}</div>
+
             <div *ngIf="user">{{ user.username }}</div>
 
           </div>

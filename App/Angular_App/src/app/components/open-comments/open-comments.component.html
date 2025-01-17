@@ -1,23 +1,25 @@
+<app-loading-spinner *ngIf="isLoading" />
+
 <div class="container mx-auto mt-8 mb-2 max-w-screen-xl grow px-0 sm:px-5">
   <div class="grid grid-cols-11 lg:gap-8">
     <div class="col-span-11 mb-5 md:col-span-11 lg:col-span-7 space-y-5">
       <div class="rounded-none border-x-0 sm:rounded-xl sm:border-x border bg-white dark:border-gray-700 dark:bg-black">
         <article class="p-5">
           <span></span>
-          <div *ngIf="tweetById" class="flex items-start space-x-3">
+          <div *ngIf="tweetById_Data" class="flex items-start space-x-3">
             <a class="contents" href="/u/jeanayala"><img alt="0x0178c5"
                 class="size-11 z-[1] cursor-pointer rounded-full border bg-gray-200 dark:border-gray-700" height="44"
-                loading="lazy" [src]=" 'http://127.0.0.1:8000' + tweetById.user.profile_image " width="44"></a>
+                loading="lazy" [src]=" 'http://127.0.0.1:8000' + tweetById_Data.user.profile_image " width="44"></a>
             <div class="w-[calc(100%-55px)]">
               <div class="flex w-full items-start justify-between">
                 <div class="flex flex-wrap items-center gap-x-1"><a class="outline-none hover:underline focus:underline"
                     href="/u/jeanayala"><span><span data-state="closed"><span
-                          class="font-semibold">{{tweetById.user.name}}
+                          class="font-semibold">{{tweetById_Data.user.name}}
                         </span></span></span></a><a class="outline-none hover:underline focus:underline"
                     href="/u/jeanayala"><span><span data-state="closed"><span
-                          class="ld-text-gray-500 text-sm">&#64;{{tweetById.user.username}}
+                          class="ld-text-gray-500 text-sm">&#64;{{tweetById_Data.user.username}}
                         </span></span></span></a><span class="ld-text-gray-500"><span class="mr-1">·</span><a
-                      class="text-xs hover:underline" href="/posts/0x0178c5-0x09c8-DA-b9083849"> {{tweetById.created_at
+                      class="text-xs hover:underline" href="/posts/0x0178c5-0x09c8-DA-b9083849"> {{tweetById_Data.created_at
                       | timeAgo}} </a></span><span class="ld-text-gray-500 linkify"><span class="mr-1">·</span>
                     <span *ngIf="false"><span data-state="closed"><a class="text-xs hover:underline"
                           href="/c/autism">/autism</a></span>
@@ -41,20 +43,20 @@
                 <!-- id -->
                 <div class="markup linkify break-words text-md full-page-publication-markup">
                   <p>
-                    {{tweetById.content}}
+                    {{tweetById_Data.content}}
                   </p>
                 </div>
 
               </div>
-              <div class="ld-text-gray-500 my-3 text-sm"><span> {{tweetById.created_at | customDateFormat}}
+              <div class="ld-text-gray-500 my-3 text-sm"><span> {{tweetById_Data.created_at | customDateFormat}}
                 </span><span> · Posted via
                   Orb</span></div>
               <div class="divider"></div>
               <div class="ld-text-gray-500 flex flex-wrap items-center gap-x-6 gap-y-3 py-3 text-sm"><span><b
-                    class="text-black dark:text-white"> {{tweetById.comments_count}} </b> Comments</span>
+                    class="text-black dark:text-white"> {{tweetById_Data.comments_count}} </b> Comments</span>
 
                 <button class="outline-offset-2" type="button"><b class="text-black dark:text-white">
-                    {{tweetById.likes_count}} </b>
+                    {{tweetById_Data.likes_count}} </b>
                   Likes</button>
               </div>
               <div class="divider"></div>
@@ -95,9 +97,9 @@
 
                     <div class="ld-text-gray-500 flex items-center space-x-1">
                       <button *ngIf="user"
-                        [ngClass]="{'bg-red-500 text-white': tweetById.liked_by_user_ids.includes(user.id)}"
+                        [ngClass]="{'bg-red-500 text-white': tweetById_Data.liked_by_user_ids.includes(user.id)}"
                         aria-label="Like" class="hover:bg-gray-300/20 rounded-full p-1.5 outline-offset-2" type="button"
-                        (click)="getLikeFun(tweetById.id)">
+                        (click)="getLikeFun(tweetById_Data.id)">
                         <span class="" data-state="closed">
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" aria-hidden="true" data-slot="icon" class="w-[17px] sm:w-[20px]">
@@ -172,9 +174,6 @@
 
                             <!-- like -->
                             <div class="ld-text-gray-500 flex items-center space-x-1">
-                              <div *ngIf="isLoading" class="loading-spinner">
-                                Loading...
-                              </div>
                               <button (click)="getLikeComment(item.id)" aria-label="Like"
                                 class="hover:bg-gray-300/20 rounded-full p-1.5 outline-offset-2" type="button">
                                 <span class="" data-state="closed">

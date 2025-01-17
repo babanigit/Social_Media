@@ -11,7 +11,7 @@ import { GetApiService } from './services/get-api.service';
 import { HttpClientModule } from '@angular/common/http';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; // Required for animations
-import { ToastrModule } from 'ngx-toastr'; // Import ngx-toastr module
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [AppComponent],
@@ -24,7 +24,7 @@ import { ToastrModule } from 'ngx-toastr'; // Import ngx-toastr module
     BrowserAnimationsModule, // Add BrowserAnimationsModule
     ToastrModule.forRoot({
       // Add ToastrModule with global configuration
-      timeOut: 5000,
+      timeOut: 1200,
       positionClass: 'toast-top-right', // Set global position
       preventDuplicates: true,
       closeButton: true,

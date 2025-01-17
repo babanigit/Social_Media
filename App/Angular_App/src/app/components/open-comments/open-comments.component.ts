@@ -15,9 +15,17 @@ import { ToastrService } from 'ngx-toastr';
 export class OpenCommentsComponent implements OnInit {
   postId: string | null = null;
   commentsData: IGetComments | undefined;
-  tweetById: IGetTweetById | undefined;
-  isLoading: boolean = false;
+  tweetById_Data: IGetTweetById | undefined;
+  user: ILoggedInUser | undefined;
+  isLoading = false;
 
+  showLoading() {
+    this.isLoading = true; // Show the spinner
+  }
+
+  hideLoading() {
+    this.isLoading = false; // Hide the spinner
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -28,47 +36,68 @@ export class OpenCommentsComponent implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
       this.postId = params.get('id'); // Access the 'id' parameter
-      this.getLoggedIn();
+      if (this.postId) {
+        this.fetchById(this.postId);
+      }
+      this.getLoggedInUser();
+    });
+  }
+
+  getLoggedInUser() {
+    this.showLoading();
+    this.apiSerV.getLoggedInUser().subscribe({
+      next: (data) => {
+        this.user = data;
+        this.hideLoading();
+        // if (this.postId) {
+        //   this.fetchById(this.postId);
+        // }
+      },
+      error: (err) => {
+        this.hideLoading();
+        console.log('the error is :- ', err);
+        const statusCode = err.status;
+        const errorMessage = err.error?.error || 'An unexpected error occurred';
+
+        // Show an error toast
+        this.toastr.error(errorMessage, `Error ${statusCode}`);
+      },
     });
   }
 
   fetchById(postId: string) {
+    // get tweet by id
+
+    this.showLoading();
+    this.apiSerV.getTweetById(postId).subscribe({
+      next: (data) => {
+        this.tweetById_Data = data;
+        this.hideLoading(); // Hide the loading spinner in case of error
+      },
+      error: (err) => {
+        this.hideLoading(); // Hide the loading spinner in case of error
+        const statusCode = err.status;
+        const errorMessage = err.error?.error || 'An unexpected error occurred';
+
+        // Show an error toast
+        this.toastr.error(errorMessage, `Error ${statusCode}`);
+      },
+    });
+
+    // get comments by tweet id
+    this.showLoading();
     this.apiSerV.getTweetComments(postId).subscribe({
       next: (data) => {
         this.commentsData = data;
-      },
-      error: (error) => {
-        console.error('Error fetching comments:', error);
-      },
-    });
-
-    this.apiSerV.getTweetById(postId).subscribe({
-      next: (data) => {
-        this.tweetById = data;
-      },
-      error: (error) => {
-        console.error('Error fetching tweetbyid:', error);
-      },
-    });
-  }
-
-  user: ILoggedInUser | undefined;
-  loading = true;
-  error: string | null = null;
-
-  getLoggedIn() {
-    this.apiSerV.getLoggedInUser().subscribe({
-      next: (data) => {
-        this.user = data;
-        this.loading = false;
-        if (this.postId) {
-          this.fetchById(this.postId);
-        }
+        this.hideLoading(); // Hide the loading spinner
       },
       error: (err) => {
-        this.error = 'Failed to load user data. Please try again later.';
-        this.loading = false;
-        console.error('Error loading user data:', err);
+        this.hideLoading(); // Hide the loading spinner in case of error
+        const statusCode = err.status;
+        const errorMessage = err.error?.error || 'An unexpected error occurred';
+
+        // Show an error toast
+        this.toastr.error(errorMessage, `Error ${statusCode}`);
       },
     });
   }
@@ -83,9 +112,8 @@ export class OpenCommentsComponent implements OnInit {
     });
   }
 
-
   getLikeComment(tweetId: string) {
-    this.isLoading = true;
+    this.showLoading(); // Show the loading spinner
 
     this.apiSerV.likeComment(tweetId).subscribe({
       next: (response) => {
@@ -93,7 +121,7 @@ export class OpenCommentsComponent implements OnInit {
           this.fetchById(this.postId);
         }
 
-        this.isLoading = false;
+        this.hideLoading(); // Hide the loading spinner
         const message = response.message;
 
         // Success toast
@@ -102,7 +130,7 @@ export class OpenCommentsComponent implements OnInit {
         });
       },
       error: (err) => {
-        this.isLoading = false;
+        this.hideLoading(); // Hide the loading spinner in case of error
         const statusCode = err.status;
         const errorMessage = err.error?.error || 'An unexpected error occurred';
 
@@ -116,10 +144,33 @@ export class OpenCommentsComponent implements OnInit {
   }
 
   getDisLikeComment(tweetId: string) {
-    console.log('comment DisLiked');
+    this.showLoading(); // Show the loading spinner
 
-    if (this.postId) {
-      this.fetchById(this.postId);
-    }
+    this.apiSerV.dislikeComment(tweetId).subscribe({
+      next: (response) => {
+        if (this.postId) {
+          this.fetchById(this.postId);
+        }
+
+        this.hideLoading(); // Hide the loading spinner
+        const message = response.message;
+
+        // Success toast
+        this.toastr.success(message, 'Success', {
+          timeOut: 1200,
+        });
+      },
+      error: (err) => {
+        this.hideLoading(); // Hide the loading spinner in case of error
+        const statusCode = err.status;
+        const errorMessage = err.error?.error || 'An unexpected error occurred';
+
+        // Show an error toast
+        this.toastr.error(errorMessage, `Error ${statusCode}`);
+      },
+      complete: () => {
+        console.log('API request completed.');
+      },
+    });
   }
 }

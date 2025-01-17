@@ -33,7 +33,6 @@ export class GetApiService {
     // Attempt to retrieve the token from local storage first
     const tokenFromLocalStorage = localStorage.getItem('auth_token');
     if (tokenFromLocalStorage) {
-      // console.log('got token from local storage');
       return tokenFromLocalStorage;
     }
 
@@ -44,7 +43,6 @@ export class GetApiService {
       for (const cookie of cookies) {
         const [key, value] = cookie.split('=');
         if (key.trim() === 'auth_token') {
-          // console.log('got token from cookie');
           return decodeURIComponent(value); // Return the token after decoding
         }
       }
@@ -57,7 +55,7 @@ export class GetApiService {
 
     // If no token is found in either local storage or cookies, log the error
     console.error(
-      '[get-api-serV-error]:- No auth token found. Authorization token missing or expired.'
+      '[get-api-serV-error cookie or local_storage]:- No auth token found. Authorization token missing or expired.'
     );
     return null;
   }
@@ -84,8 +82,7 @@ export class GetApiService {
 
     // Check if the token is available
     if (!token) {
-      console.error('[get-api-serV-error]:- Authorization token missing');
-      return throwError('Authorization token missing');
+      return throwError({ error: { error: 'token not found' } });
     }
 
     // Set the Authorization header
@@ -176,8 +173,7 @@ export class GetApiService {
     const token = this.getTokenFromCookieOrLocalStorage();
 
     if (!token) {
-      console.error('[get-api-serV-error]:- Authorization token missing');
-      return throwError('Authorization token missing');
+      return throwError({ error: { error: 'token not found' } });
     }
 
     const headers = new HttpHeaders({
@@ -186,10 +182,7 @@ export class GetApiService {
 
     return this.http.get(`${this.apiUrl}/tweet/${tweetId}/tweet`).pipe(
       catchError((error) => {
-        console.error(
-          '[get-api-serV-error]:- Error loading like get tweet by id :',
-          error
-        );
+        console.error('[get-api-serV-error get tweet by id]:- ', error);
         throw error;
       })
     );
@@ -205,8 +198,7 @@ export class GetApiService {
     const token = this.getTokenFromCookieOrLocalStorage();
 
     if (!token) {
-      console.error('[get-api-serV-error]:- Authorization token missing');
-      return throwError('Authorization token missing');
+      return throwError({ error: { error: 'token not found' } });
     }
 
     const headers = new HttpHeaders({
@@ -230,8 +222,7 @@ export class GetApiService {
     const token = this.getTokenFromCookieOrLocalStorage();
 
     if (!token) {
-      console.error('[get-api-serV-error]:- Authorization token missing');
-      return throwError('Authorization token missing');
+      return throwError({ error: { error: 'token not found' } });
     }
 
     const headers = new HttpHeaders({
@@ -242,10 +233,7 @@ export class GetApiService {
       .post(`${this.apiUrl}/tweets/${tweetId}/like/`, null, { headers })
       .pipe(
         catchError((error) => {
-          console.error(
-            '[get-api-serV-error]:- Error loading like tweet :',
-            error
-          );
+          console.error('[get-api-serV-error]:- ', error);
           throw error;
         })
       );
@@ -255,10 +243,7 @@ export class GetApiService {
     const url = `${this.apiUrl}/tweets/${tweetId}/postGetComments/`;
     return this.http.get(url).pipe(
       catchError((error) => {
-        console.error(
-          '[get-api-serV-error]:- Error loading get Tweet Comments :',
-          error
-        );
+        console.error('[get-api-serV-error get tweet comments]:- ', error);
         throw error;
       })
     );
@@ -268,8 +253,7 @@ export class GetApiService {
     const token = this.getTokenFromCookieOrLocalStorage();
 
     if (!token) {
-      console.error('[get-api-serV-error]:- Authorization token missing');
-      return throwError('Authorization token missing');
+      return throwError({ error: { error: 'token not found' } });
     }
 
     const headers = new HttpHeaders({
@@ -291,8 +275,7 @@ export class GetApiService {
     const token = this.getTokenFromCookieOrLocalStorage();
 
     if (!token) {
-      console.error('[get-api-serV-error]:- Authorization token missing');
-      return throwError('Authorization token missing');
+      return throwError({ error: { error: 'token not found' } });
     }
 
     const headers = new HttpHeaders({
