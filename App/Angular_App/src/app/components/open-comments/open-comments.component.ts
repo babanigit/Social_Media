@@ -49,9 +49,7 @@ export class OpenCommentsComponent implements OnInit {
       next: (data) => {
         this.user = data;
         this.hideLoading();
-        // if (this.postId) {
-        //   this.fetchById(this.postId);
-        // }
+
       },
       error: (err) => {
         this.hideLoading();
@@ -60,7 +58,7 @@ export class OpenCommentsComponent implements OnInit {
         const errorMessage = err.error?.error || 'An unexpected error occurred';
 
         // Show an error toast
-        this.toastr.error(errorMessage, `Error ${statusCode}`);
+        // this.toastr.error(errorMessage, `Error ${statusCode}`);
       },
     });
   }
@@ -80,7 +78,7 @@ export class OpenCommentsComponent implements OnInit {
         const errorMessage = err.error?.error || 'An unexpected error occurred';
 
         // Show an error toast
-        this.toastr.error(errorMessage, `Error ${statusCode}`);
+        // this.toastr.error(errorMessage, `Error ${statusCode}`);
       },
     });
 
@@ -103,12 +101,33 @@ export class OpenCommentsComponent implements OnInit {
   }
 
   getLikeFun(idNum: string) {
-    this.apiSerV.likeTweet(idNum).subscribe((response) => {
-      console.log('Like tweet response ', response);
+    this.showLoading(); // Show the loading spinner
 
-      if (this.postId) {
-        this.fetchById(this.postId);
-      }
+    this.apiSerV.likeTweet(idNum).subscribe({
+      next: (response) => {
+        if (this.postId) {
+          this.fetchById(this.postId);
+        }
+
+        this.hideLoading(); // Hide the loading spinner
+        const message = response.message;
+
+        // Success toast
+        this.toastr.success(message, 'Success', {
+          timeOut: 1200,
+        });
+      },
+      error: (err) => {
+        this.hideLoading(); // Hide the loading spinner in case of error
+        const statusCode = err.status;
+        const errorMessage = err.error?.error || 'An unexpected error occurred';
+
+        // Show an error toast
+        this.toastr.error(errorMessage, `Error ${statusCode}`);
+      },
+      complete: () => {
+        console.log('API request completed.');
+      },
     });
   }
 

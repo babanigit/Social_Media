@@ -3,14 +3,14 @@
   <div class="space-y-3 text-center">
     <div class="font-bold">
 
-      <textarea [(ngModel)]="content" placeholder="What's happening?" required
+      <textarea [(ngModel)]="content" placeholder="Add Comment!" required
         [ngModelOptions]="{standalone: true}"></textarea>
       <!-- <input type="file" (change)="onFileSelected($event)" /> -->
 
     </div>
     <div><button (click)="onSubmit()"
         class="text-white hover:text-white active:text-gray-400 dark:text-gray-950 dark:hover:text-gray-900 dark:active:text-gray-600 bg-gray-950 hover:bg-gray-700 active:bg-gray-700 dark:bg-white dark:hover:bg-gray-200 dark:active:bg-gray-200 border border-gray-950 hover:border-gray-800 active:border-gray-700 dark:border-white dark:hover:border-gray-100 dark:active:border-gray-200 px-5 py-1.5 rounded-full font-bold outline-2 outline-offset-4 transition-colors">
-        <div> Tweet</div>
+        <div> comment</div>
       </button></div>
   </div>
 </aside>

@@ -5,6 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { TimeAgoPipe } from '../../pipes/time-ago.pipe';
 import { CustomDateFormatPipe } from '../../pipes/custom-date-format.pipe';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
+import { CreateCommentModule } from '../create-comment/create-comment.module';
 
 const routes: Routes = [{ path: '', component: OpenCommentsComponent }];
 
@@ -15,7 +16,8 @@ const routes: Routes = [{ path: '', component: OpenCommentsComponent }];
     RouterModule.forChild(routes),
     TimeAgoPipe,
     CustomDateFormatPipe,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    CreateCommentModule
   ],
   exports: [OpenCommentsComponent],
 })

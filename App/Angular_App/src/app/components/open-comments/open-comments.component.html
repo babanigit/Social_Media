@@ -6,7 +6,7 @@
       <div class="rounded-none border-x-0 sm:rounded-xl sm:border-x border bg-white dark:border-gray-700 dark:bg-black">
         <article class="p-5">
           <span></span>
-          <div *ngIf="tweetById_Data" class="flex items-start space-x-3">
+          <div *ngIf="tweetById_Data !== undefined && tweetById_Data" class="flex items-start space-x-3">
             <a class="contents" href="/u/jeanayala"><img alt="0x0178c5"
                 class="size-11 z-[1] cursor-pointer rounded-full border bg-gray-200 dark:border-gray-700" height="44"
                 loading="lazy" [src]=" 'http://127.0.0.1:8000' + tweetById_Data.user.profile_image " width="44"></a>
@@ -19,7 +19,8 @@
                     href="/u/jeanayala"><span><span data-state="closed"><span
                           class="ld-text-gray-500 text-sm">&#64;{{tweetById_Data.user.username}}
                         </span></span></span></a><span class="ld-text-gray-500"><span class="mr-1">·</span><a
-                      class="text-xs hover:underline" href="/posts/0x0178c5-0x09c8-DA-b9083849"> {{tweetById_Data.created_at
+                      class="text-xs hover:underline" href="/posts/0x0178c5-0x09c8-DA-b9083849">
+                      {{tweetById_Data.created_at
                       | timeAgo}} </a></span><span class="ld-text-gray-500 linkify"><span class="mr-1">·</span>
                     <span *ngIf="false"><span data-state="closed"><a class="text-xs hover:underline"
                           href="/c/autism">/autism</a></span>
@@ -96,7 +97,7 @@
                     </div>
 
                     <div class="ld-text-gray-500 flex items-center space-x-1">
-                      <button *ngIf="user"
+                      <button *ngIf="user !== undefined && user"
                         [ngClass]="{'bg-red-500 text-white': tweetById_Data.liked_by_user_ids.includes(user.id)}"
                         aria-label="Like" class="hover:bg-gray-300/20 rounded-full p-1.5 outline-offset-2" type="button"
                         (click)="getLikeFun(tweetById_Data.id)">
@@ -119,6 +120,11 @@
           </div>
         </article>
       </div>
+
+      <div>
+        <app-create-comment />
+      </div>
+
       <div class="rounded-none border-x-0 sm:rounded-xl sm:border-x border bg-white dark:border-gray-700 dark:bg-black">
         <div data-virtuoso-scroller="true" class="virtual-divider-list-window"
           style="position: relative; height: auto;">
@@ -127,7 +133,7 @@
               style="box-sizing: border-box; margin-top: 0px; padding-top: 0px; padding-bottom: 0px;">
 
               <!-- looping the comment data-->
-              <ng-container *ngIf="commentsData">
+              <ng-container *ngIf="commentsData !== undefined && commentsData">
 
                 <div *ngFor="let item of commentsData.comments" data-index="0" data-known-size="280" data-item-index="0"
                   style="overflow-anchor: none;">
@@ -233,7 +239,7 @@
                   <img alt="0x0178c5" class="size-11 rounded-full border bg-gray-200 dark:border-gray-700" height="44"
                     loading="lazy"
                     src="https://ik.imagekit.io/lens/media-snapshot/tr:w-350,h-350/c51d3c6d4bc951b6295d0e4b39007072b1fe25caa4073544eca4ad3d0c0b02d5.webp"
-                    width="44">
+                    width="44"/>
                   <div>
                     <div class="flex max-w-sm items-center">
                       <div class="text-md grid">
@@ -241,16 +247,18 @@
                       </div>
                     </div>
                     <div><span class="ld-text-gray-500 text-sm">&#64;jeanayala</span></div>
-                    <div class="text-sm mt-2 linkify leading-6" style="word-break: break-word;">
+                    <!-- <div class="text-sm mt-2 linkify leading-6" style="word-break: break-word;">
                       <p>🌐 Software Developer at SONGS Protocol |⚡️ Making music distribution fairer | 🎸
                         Blockchain-powered musician | 🧠 Neurodivergent advocate | 🔥 Creator of
                         <a class="outline-none focus:underline"
                           href="/search?q=%24chaos&amp;src=link_click&amp;type=pubs">$chaos</a>
                       </p>
-                    </div>
+                    </div> -->
                   </div>
                 </div>
-              </span></span></a>
+              </span>
+            </span>
+          </a>
           <div class="contents">
             <button
               class="text-gray-950 active:text-gray-300 dark:text-white dark:active:text-gray-700 border border-gray-300 hover:border-gray-950 dark:border-gray-700 dark:hover:border-gray-100 px-3 py-0.5 text-sm rounded-full font-bold outline-2 outline-offset-4 transition-colors"
