@@ -25,7 +25,7 @@ urlpatterns = [
 
         
     # Comment operations
-    path('tweets/<str:tweet_id>/postGetComments/', views.post_get_put_delete_tweet_comments, name='get_tweet_comments'),
+    path('tweets/<str:tweet_id>/getPostPutDeleteComment/', views.post_get_put_delete_tweet_comments, name='get__post_put_delete_tweet_comments'),
     path('tweets/<str:comment_id>/likeComment/', views.like_comment, name='like_comment'),
     path('tweets/<str:comment_id>/dislikeComments/', views.dislike_comment, name='dislike_comment'),
 

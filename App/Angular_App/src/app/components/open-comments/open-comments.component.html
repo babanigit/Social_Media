@@ -122,7 +122,13 @@
       </div>
 
       <div>
-        <app-create-comment />
+        <!-- <app-create-comment /> -->
+
+        <div class="add-comment">
+          <textarea [(ngModel)]="newComment" placeholder="Write a comment..."></textarea>
+          <button (click)="addComment()">Post</button>
+        </div>
+
       </div>
 
       <div class="rounded-none border-x-0 sm:rounded-xl sm:border-x border bg-white dark:border-gray-700 dark:bg-black">

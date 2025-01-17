@@ -37,7 +37,7 @@ export class OpenCommentsComponent implements OnInit {
     this.route.paramMap.subscribe((params) => {
       this.postId = params.get('id'); // Access the 'id' parameter
       if (this.postId) {
-        this.fetchById(this.postId);
+        this.fetchCommentAndTweetById(this.postId);
       }
       this.getLoggedInUser();
     });
@@ -46,14 +46,12 @@ export class OpenCommentsComponent implements OnInit {
   getLoggedInUser() {
     this.showLoading();
     this.apiSerV.getLoggedInUser().subscribe({
-      next: (data) => {
+      next: (data: ILoggedInUser) => {
         this.user = data;
         this.hideLoading();
-
       },
       error: (err) => {
         this.hideLoading();
-        console.log('the error is :- ', err);
         const statusCode = err.status;
         const errorMessage = err.error?.error || 'An unexpected error occurred';
 
@@ -63,7 +61,7 @@ export class OpenCommentsComponent implements OnInit {
     });
   }
 
-  fetchById(postId: string) {
+  fetchCommentAndTweetById(postId: string) {
     // get tweet by id
 
     this.showLoading();
@@ -106,7 +104,7 @@ export class OpenCommentsComponent implements OnInit {
     this.apiSerV.likeTweet(idNum).subscribe({
       next: (response) => {
         if (this.postId) {
-          this.fetchById(this.postId);
+          this.fetchCommentAndTweetById(this.postId);
         }
 
         this.hideLoading(); // Hide the loading spinner
@@ -137,7 +135,7 @@ export class OpenCommentsComponent implements OnInit {
     this.apiSerV.likeComment(tweetId).subscribe({
       next: (response) => {
         if (this.postId) {
-          this.fetchById(this.postId);
+          this.fetchCommentAndTweetById(this.postId);
         }
 
         this.hideLoading(); // Hide the loading spinner
@@ -168,7 +166,7 @@ export class OpenCommentsComponent implements OnInit {
     this.apiSerV.dislikeComment(tweetId).subscribe({
       next: (response) => {
         if (this.postId) {
-          this.fetchById(this.postId);
+          this.fetchCommentAndTweetById(this.postId);
         }
 
         this.hideLoading(); // Hide the loading spinner
@@ -189,6 +187,40 @@ export class OpenCommentsComponent implements OnInit {
       },
       complete: () => {
         console.log('API request completed.');
+      },
+    });
+  }
+
+  comments: any[] = [];
+  newComment = '';
+
+  addComment(): void {
+    if (!this.newComment.trim()) {
+      this.toastr.warning('Comment cannot be empty');
+      return;
+    }
+
+    const data = {
+      content: this.newComment,
+      user_id: this.user!.id,
+    };
+
+    this.apiSerV.createComment(this.postId!, data).subscribe({
+      next: (response) => {
+        this.comments.push(response.comment);
+        this.toastr.success('Comment added successfully');
+        this.newComment = '';
+
+        if (this.postId) {
+          this.fetchCommentAndTweetById(this.postId);
+        }
+      },
+      error: (err) => {
+        const statusCode = err.status;
+        const errorMessage = err.error?.error || 'An unexpected error occurred';
+
+        // Show an error toast
+        this.toastr.error(errorMessage, `Error ${statusCode}`);
       },
     });
   }

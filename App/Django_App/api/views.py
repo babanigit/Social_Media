@@ -20,7 +20,9 @@ def get_Token_Helper_function(request):
         "Authorization", ""
     ).replace("Token ", "")
     if not token:
-        raise ValidationError("Authentication required [from get_Token_Helper_functions]")
+        raise ValidationError(
+            "Authentication required [from get_Token_Helper_functions]"
+        )
     try:
         return User.objects.get(token=token)
     except User.DoesNotExist:
@@ -75,9 +77,9 @@ def get_loggedIn_user(request):
             tweets = (
                 Tweet.objects.filter(user=user)
                 .annotate(
-                    like_count=Count("likes"),
-                    comment_count=Count("comments"),
-                    retweet_count=Count("retweets"),
+                    like_count=Count("likes",distinct=True),
+                    comment_count=Count("comments",distinct=True),
+                    retweet_count=Count("retweets",distinct=True),
                 )
                 .order_by("-created_at")
             )
@@ -482,9 +484,9 @@ def get_Users_and_Tweets(request):
                 user_tweets = (
                     Tweet.objects.filter(user=user)
                     .annotate(
-                        like_count=Count("likes"),
-                        comment_count=Count("comments"),
-                        retweet_count=Count("retweets"),
+                        like_count=Count("likes",distinct=True),
+                        comment_count=Count("comments",distinct=True),
+                        retweet_count=Count("retweets",distinct=True),
                     )
                     .order_by("-created_at")
                 )
@@ -587,11 +589,11 @@ def get_tweets(request):
             # Base tweet query with annotations
             tweets = (
                 Tweet.objects.annotate(
-                    like_count=Count("likes"),
-                    comment_count=Count("comments"),
-                    retweet_count=Count("retweets"),
-                    user_followers_count=Count("user__followers"),
-                    user_following_count=Count("user__following"),
+                    like_count=Count("likes",distinct=True),
+                    comment_count=Count("comments",distinct=True),
+                    retweet_count=Count("retweets",distinct=True),
+                    user_followers_count=Count("user__followers",distinct=True),
+                    user_following_count=Count("user__following",distinct=True),
                 )
                 .select_related("user")
                 .order_by("-created_at")
@@ -679,11 +681,13 @@ def get_tweet_by_id(request, tweet_id):
             # Fetch the specific tweet by ID
             tweet = get_object_or_404(
                 Tweet.objects.annotate(
-                    like_count=Count("likes"),
-                    comment_count=Count("comments"),
-                    retweet_count=Count("retweets"),
-                    user_followers_count=Count("user__followers"),
-                    user_following_count=Count("user__following"),
+                    like_count=Count("likes", distinct=True),  # Count distinct likes
+                    comment_count=Count(
+                        "comments", distinct=True
+                    ),  # Count distinct comments
+                    retweet_count=Count("retweets", distinct=True),
+                    user_followers_count=Count("user__followers", distinct=True),
+                    user_following_count=Count("user__following", distinct=True),
                 ).select_related("user"),
                 id=tweet_id,
             )
@@ -968,10 +972,10 @@ def post_get_put_delete_tweet_comments(request, tweet_id):
 @csrf_exempt
 def like_comment(request, comment_id):
     if request.method == "POST":
-        
-         # Simulate a 500 Internal Server Error
+
+        # Simulate a 500 Internal Server Error
         # return JsonResponse({"error": "Simulated server error"}, status=500)
-        
+
         token = request.COOKIES.get("auth_token")
         if not token:
             auth_header = request.headers.get("Authorization")
@@ -995,7 +999,6 @@ def like_comment(request, comment_id):
             else:
                 comment.likes.add(user)
                 action = "liked"
-                
 
             return JsonResponse(
                 {
@@ -1014,10 +1017,10 @@ def like_comment(request, comment_id):
 
         except Comment.DoesNotExist:
             return JsonResponse({"error": "Comment not found"}, status=404)
-        
+
         except User.DoesNotExist:
             return JsonResponse({"error": "user not found"}, status=404)
-        
+
         except Exception as e:
             return JsonResponse({"error": "[Exception error]:- " + str(e)}, status=500)
 
@@ -1274,9 +1277,9 @@ def get_user_tweets(request, username):
                 .select_related("user")
                 .prefetch_related("likes", "comments", "retweets")
                 .annotate(
-                    like_count=Count("likes"),
-                    comment_count=Count("comments"),
-                    retweet_count=Count("retweets"),
+                    like_count=Count("likes",distinct=True),
+                    comment_count=Count("comments",distinct=True),
+                    retweet_count=Count("retweets",distinct=True),
                 )
                 .order_by("-created_at")
             )
@@ -1335,9 +1338,9 @@ def search(request):
                     .select_related("user")
                     .prefetch_related("likes", "comments", "retweets")
                     .annotate(
-                        like_count=Count("likes"),
-                        comment_count=Count("comments"),
-                        retweet_count=Count("retweets"),
+                        like_count=Count("likes",distinct=True),
+                        comment_count=Count("comments",distinct=True),
+                        retweet_count=Count("retweets",distinct=True),
                     )
                 )
 

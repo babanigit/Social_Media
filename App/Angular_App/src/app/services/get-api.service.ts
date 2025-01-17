@@ -239,8 +239,34 @@ export class GetApiService {
       );
   }
 
+  createComment(
+    tweetId: string,
+    data: { content: string; user_id: string }
+  ): Observable<any> {
+    const token = this.getTokenFromCookieOrLocalStorage();
+
+    if (!token) {
+      return throwError({ error: { error: 'token not found' } });
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Token ${token}`,
+    });
+
+    return this.http
+      .post(`${this.apiUrl}/tweets/${tweetId}/getPostPutDeleteComment/`, data, {
+        headers,
+      })
+      .pipe(
+        catchError((error) => {
+          console.error('[get-api-serV-error]:- ', error);
+          throw error;
+        })
+      );
+  }
+
   getTweetComments(tweetId: string): Observable<any> {
-    const url = `${this.apiUrl}/tweets/${tweetId}/postGetComments/`;
+    const url = `${this.apiUrl}/tweets/${tweetId}/getPostPutDeleteComment/`;
     return this.http.get(url).pipe(
       catchError((error) => {
         console.error('[get-api-serV-error get tweet comments]:- ', error);

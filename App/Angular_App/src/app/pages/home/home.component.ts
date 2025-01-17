@@ -5,6 +5,7 @@ import { ILoggedInUser } from '../../models/LoggedInUser';
 import { IGetAllUsersData, IGetAllUsers } from '../../models/UsersTweets';
 import { GetApiService } from '../../services/get-api.service';
 import { NavigationEnd, NavigationStart, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-home',
