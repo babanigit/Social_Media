@@ -65,6 +65,7 @@
                 <span class="mt-3 flex w-full flex-wrap items-center justify-between gap-3">
                   <span class="flex items-center gap-x-6">
 
+                    <!-- comment -->
                     <div class="ld-text-gray-500 flex items-center space-x-1">
                       <button aria-label="Comment" class="rounded-full p-1.5 outline-offset-2 hover:bg-gray-300/20"
                         type="button">
@@ -96,6 +97,7 @@
                       </div>
                     </div>
 
+                    <!-- like button -->
                     <div class="ld-text-gray-500 flex items-center space-x-1">
                       <button *ngIf="user !== undefined && user"
                         [ngClass]="{'bg-red-500 text-white': tweetById_Data.liked_by_user_ids.includes(user.id)}"
@@ -121,14 +123,13 @@
         </article>
       </div>
 
+      <!-- create comment -->
       <div>
         <!-- <app-create-comment /> -->
-
         <div class="add-comment">
           <textarea [(ngModel)]="newComment" placeholder="Write a comment..."></textarea>
           <button (click)="addComment()">Post</button>
         </div>
-
       </div>
 
       <div class="rounded-none border-x-0 sm:rounded-xl sm:border-x border bg-white dark:border-gray-700 dark:bg-black">
@@ -186,8 +187,12 @@
 
                             <!-- like -->
                             <div class="ld-text-gray-500 flex items-center space-x-1">
-                              <button (click)="getLikeComment(item.id)" aria-label="Like"
-                                class="hover:bg-gray-300/20 rounded-full p-1.5 outline-offset-2" type="button">
+                              <button
+                                *ngIf="user !== undefined && user "
+                                (click)="toggleLikeComment(item.id)"
+                                [ngClass]="{'bg-red-500 text-white': commentById_Data!.liked_by_user_ids.includes(user.id)}"
+                                aria-label="Like" class="hover:bg-gray-300/20 rounded-full p-1.5 outline-offset-2"
+                                type="button">
                                 <span class="" data-state="closed">
                                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"
@@ -245,7 +250,7 @@
                   <img alt="0x0178c5" class="size-11 rounded-full border bg-gray-200 dark:border-gray-700" height="44"
                     loading="lazy"
                     src="https://ik.imagekit.io/lens/media-snapshot/tr:w-350,h-350/c51d3c6d4bc951b6295d0e4b39007072b1fe25caa4073544eca4ad3d0c0b02d5.webp"
-                    width="44"/>
+                    width="44" />
                   <div>
                     <div class="flex max-w-sm items-center">
                       <div class="text-md grid">

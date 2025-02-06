@@ -28,6 +28,7 @@ urlpatterns = [
     path('tweets/<str:tweet_id>/getPostPutDeleteComment/', views.post_get_put_delete_tweet_comments, name='get__post_put_delete_tweet_comments'),
     path('tweets/<str:comment_id>/likeComment/', views.like_comment, name='like_comment'),
     path('tweets/<str:comment_id>/dislikeComments/', views.dislike_comment, name='dislike_comment'),
+    path('comments/<str:comment_id>/', views.get_comment_by_id, name='get_comment_by_id'),
 
 
     #get all Users operations

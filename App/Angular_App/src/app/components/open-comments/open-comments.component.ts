@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GetApiService } from '../../services/get-api.service';
-import { IGetComments } from '../../models/Comments';
+import { IGetCommentById, IGetComments } from '../../models/Comments';
 import { IGetTweetById } from '../../models/GetTweets';
 import { ILoggedInUser } from '../../models/LoggedInUser';
 
@@ -16,6 +16,7 @@ export class OpenCommentsComponent implements OnInit {
   postId: string | null = null;
   commentsData: IGetComments | undefined;
   tweetById_Data: IGetTweetById | undefined;
+  commentById_Data: IGetCommentById | undefined
   user: ILoggedInUser | undefined;
   isLoading = false;
 
@@ -62,8 +63,8 @@ export class OpenCommentsComponent implements OnInit {
   }
 
   fetchCommentAndTweetById(postId: string) {
-    // get tweet by id
 
+    // get tweet by id
     this.showLoading();
     this.apiSerV.getTweetById(postId).subscribe({
       next: (data) => {
@@ -96,7 +97,59 @@ export class OpenCommentsComponent implements OnInit {
         this.toastr.error(errorMessage, `Error ${statusCode}`);
       },
     });
+
+    //bab
+     // get comment by id
+     this.showLoading();
+     this.apiSerV.getCommentById("4bcfa6f3-3644-4d25-bb83-9abbdf75ada3").subscribe({
+       next: (data: IGetCommentById) => {
+         this.commentById_Data = data;
+         this.hideLoading(); // Hide the loading spinner
+       },
+       error: (err) => {
+         this.hideLoading(); // Hide the loading spinner in case of error
+         const statusCode = err.status;
+         const errorMessage = err.error?.error || 'An unexpected error occurred';
+
+         // Show an error toast
+         this.toastr.error(errorMessage, `Error ${statusCode}`);
+       },
+     });
+
   }
+
+  //@bab
+  toggleLikeComment(commentId: string): void {
+    if (this.commentById_Data!.liked_by_user_ids.includes(this.user!.id)) {
+      // Unlike the comment
+      // this.apiSerV.unlikeComment(commentId).subscribe({
+      //   next: () => {
+      //     // Remove user ID from liked_by_user_ids
+      //     const index = this.commentById_Data.liked_by_user_ids.indexOf(this.user.id);
+      //     if (index !== -1) {
+      //       this.commentById_Data.liked_by_user_ids.splice(index, 1);
+      //     }
+      //   },
+      //   error: (err) => {
+      //     const errorMessage = err.error?.error || 'Failed to unlike comment';
+      //     this.toastr.error(errorMessage, `Error`);
+      //   },
+      // });
+    } else {
+      // Like the comment
+      this.apiSerV.likeComment(commentId).subscribe({
+        next: () => {
+          // Add user ID to liked_by_user_ids
+          this.commentById_Data!.liked_by_user_ids.push(this.user!.id);
+        },
+        error: (err) => {
+          const errorMessage = err.error?.error || 'Failed to like comment';
+          this.toastr.error(errorMessage, `Error`);
+        },
+      });
+    }
+  }
+
 
   getLikeFun(idNum: string) {
     this.showLoading(); // Show the loading spinner

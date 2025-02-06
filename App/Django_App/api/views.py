@@ -968,6 +968,50 @@ def post_get_put_delete_tweet_comments(request, tweet_id):
 
     return JsonResponse({"error": "Method not allowed"}, status=405)
 
+@csrf_exempt
+def get_comment_by_id(request, comment_id):
+    if request.method == "GET":
+        try:
+            # Fetch the comment by its ID
+            comment = Comment.objects.select_related("user", "tweet").get(id=comment_id)
+            
+            # Prepare the comment data
+            comment_data = {
+                "id": str(comment.id),
+                "content": comment.content,
+                "created_at": comment.created_at,
+                "tweet_id": str(comment.tweet.id),
+                "user": {
+                    "id": str(comment.user.id),
+                    "username": comment.user.username,
+                    "name": comment.user.name,
+                    "profile_image": (
+                        comment.user.profile_image.url
+                        if comment.user.profile_image
+                        else None
+                    ),
+                },
+                "likes_count": comment.likes.count(),
+                "liked_by_user_ids": [
+                    str(user_id)
+                    for user_id in comment.likes.values_list("id", flat=True)
+                ],
+                "dislikes_count": comment.dislikes.count(),
+                "disliked_by_user_ids": [
+                    str(user_id)
+                    for user_id in comment.dislikes.values_list("id", flat=True)
+                ],
+            }
+
+            return JsonResponse(comment_data, status=200)
+
+        except Comment.DoesNotExist:
+            return JsonResponse({"error": "Comment not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Method not allowed"}, status=405)
+
 
 @csrf_exempt
 def like_comment(request, comment_id):

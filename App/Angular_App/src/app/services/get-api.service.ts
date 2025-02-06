@@ -275,6 +275,16 @@ export class GetApiService {
     );
   }
 
+  getCommentById(comment_Id: string): Observable<any> {
+    const url = `${this.apiUrl}/comments/${comment_Id}/`;
+    return this.http.get(url).pipe(
+      catchError((error) => {
+        console.error('[get-api-serV-error get comment by id]:- ', error);
+        throw error;
+      })
+    );
+  }
+
   likeComment(tweetId: string): Observable<any> {
     const token = this.getTokenFromCookieOrLocalStorage();
 
