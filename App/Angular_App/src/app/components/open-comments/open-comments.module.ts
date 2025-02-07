@@ -6,6 +6,7 @@ import { TimeAgoPipe } from '../../pipes/time-ago.pipe';
 import { CustomDateFormatPipe } from '../../pipes/custom-date-format.pipe';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 import { FormsModule } from '@angular/forms';
+import { CommentsSortByDatePipe } from '../../pipes/comments-sort-by-date.pipe';
 
 const routes: Routes = [{ path: '', component: OpenCommentsComponent }];
 
@@ -17,7 +18,8 @@ const routes: Routes = [{ path: '', component: OpenCommentsComponent }];
     TimeAgoPipe,
     CustomDateFormatPipe,
     LoadingSpinnerComponent,
-    FormsModule
+    FormsModule,
+    CommentsSortByDatePipe
   ],
   exports: [OpenCommentsComponent],
 })

@@ -16,7 +16,7 @@ export class OpenCommentsComponent implements OnInit {
   postId: string | null = null;
   commentsData: IGetComments | undefined;
   tweetById_Data: IGetTweetById | undefined;
-  commentById_Data: IGetCommentById | undefined
+  commentById_Data: IGetCommentById | undefined;
   user: ILoggedInUser | undefined;
   isLoading = false;
 
@@ -63,7 +63,6 @@ export class OpenCommentsComponent implements OnInit {
   }
 
   fetchCommentAndTweetById(postId: string) {
-
     // get tweet by id
     this.showLoading();
     this.apiSerV.getTweetById(postId).subscribe({
@@ -98,27 +97,29 @@ export class OpenCommentsComponent implements OnInit {
       },
     });
 
-    //bab
-     // get comment by id
-     this.showLoading();
-     this.apiSerV.getCommentById("4bcfa6f3-3644-4d25-bb83-9abbdf75ada3").subscribe({
-       next: (data: IGetCommentById) => {
-         this.commentById_Data = data;
-         this.hideLoading(); // Hide the loading spinner
-       },
-       error: (err) => {
-         this.hideLoading(); // Hide the loading spinner in case of error
-         const statusCode = err.status;
-         const errorMessage = err.error?.error || 'An unexpected error occurred';
+    //bab int the work
+    // get comment by id
+    // this.showLoading();
+    // this.apiSerV
+    //   .getCommentById('4bcfa6f3-3644-4d25-bb83-9abbdf75ada3')
+    //   .subscribe({
+    //     next: (data: IGetCommentById) => {
+    //       this.commentById_Data = data;
+    //       this.hideLoading(); // Hide the loading spinner
+    //     },
+    //     error: (err) => {
+    //       this.hideLoading(); // Hide the loading spinner in case of error
+    //       const statusCode = err.status;
+    //       const errorMessage =
+    //         err.error?.error || 'An unexpected error occurred';
 
-         // Show an error toast
-         this.toastr.error(errorMessage, `Error ${statusCode}`);
-       },
-     });
-
+    //       // Show an error toast
+    //       this.toastr.error(errorMessage, `Error ${statusCode}`);
+    //     },
+    //   });
   }
 
-  //@bab
+  //bab in the work
   toggleLikeComment(commentId: string): void {
     if (this.commentById_Data!.liked_by_user_ids.includes(this.user!.id)) {
       // Unlike the comment
@@ -150,8 +151,7 @@ export class OpenCommentsComponent implements OnInit {
     }
   }
 
-
-  getLikeFun(idNum: string) {
+  LikeTweet(idNum: string) {
     this.showLoading(); // Show the loading spinner
 
     this.apiSerV.likeTweet(idNum).subscribe({
@@ -182,7 +182,8 @@ export class OpenCommentsComponent implements OnInit {
     });
   }
 
-  getLikeComment(tweetId: string) {
+  //bab in the work
+  LikeComment(tweetId: string) {
     this.showLoading(); // Show the loading spinner
 
     this.apiSerV.likeComment(tweetId).subscribe({
@@ -213,7 +214,8 @@ export class OpenCommentsComponent implements OnInit {
     });
   }
 
-  getDisLikeComment(tweetId: string) {
+  //bab in the work
+  DisLikeComment(tweetId: string) {
     this.showLoading(); // Show the loading spinner
 
     this.apiSerV.dislikeComment(tweetId).subscribe({
