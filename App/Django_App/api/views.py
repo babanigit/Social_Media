@@ -1,6 +1,6 @@
 # views.py
 import json
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login as django_login
 from django.core.paginator import Paginator
@@ -53,6 +53,10 @@ def index(request):
     return JsonResponse({"message": "Twitter Clone API is running"})
 
 
+def hello_api(request):
+    return HttpResponse("Hello API")
+
+
 @csrf_exempt
 def get_loggedIn_user(request):
     if request.method == "GET":
@@ -77,9 +81,9 @@ def get_loggedIn_user(request):
             tweets = (
                 Tweet.objects.filter(user=user)
                 .annotate(
-                    like_count=Count("likes",distinct=True),
-                    comment_count=Count("comments",distinct=True),
-                    retweet_count=Count("retweets",distinct=True),
+                    like_count=Count("likes", distinct=True),
+                    comment_count=Count("comments", distinct=True),
+                    retweet_count=Count("retweets", distinct=True),
                 )
                 .order_by("-created_at")
             )
@@ -257,7 +261,9 @@ def login(request):
                 )
 
             try:
+                print("hello user")
                 user = User.objects.get(username=username)
+                print(f"User found: {user.username}")  # Debugging line
                 if check_password(password, user.password):
                     user.generate_token()
                     response = JsonResponse(
@@ -484,9 +490,9 @@ def get_Users_and_Tweets(request):
                 user_tweets = (
                     Tweet.objects.filter(user=user)
                     .annotate(
-                        like_count=Count("likes",distinct=True),
-                        comment_count=Count("comments",distinct=True),
-                        retweet_count=Count("retweets",distinct=True),
+                        like_count=Count("likes", distinct=True),
+                        comment_count=Count("comments", distinct=True),
+                        retweet_count=Count("retweets", distinct=True),
                     )
                     .order_by("-created_at")
                 )
@@ -589,11 +595,11 @@ def get_tweets(request):
             # Base tweet query with annotations
             tweets = (
                 Tweet.objects.annotate(
-                    like_count=Count("likes",distinct=True),
-                    comment_count=Count("comments",distinct=True),
-                    retweet_count=Count("retweets",distinct=True),
-                    user_followers_count=Count("user__followers",distinct=True),
-                    user_following_count=Count("user__following",distinct=True),
+                    like_count=Count("likes", distinct=True),
+                    comment_count=Count("comments", distinct=True),
+                    retweet_count=Count("retweets", distinct=True),
+                    user_followers_count=Count("user__followers", distinct=True),
+                    user_following_count=Count("user__following", distinct=True),
                 )
                 .select_related("user")
                 .order_by("-created_at")
@@ -968,13 +974,14 @@ def post_get_put_delete_tweet_comments(request, tweet_id):
 
     return JsonResponse({"error": "Method not allowed"}, status=405)
 
+
 @csrf_exempt
 def get_comment_by_id(request, comment_id):
     if request.method == "GET":
         try:
             # Fetch the comment by its ID
             comment = Comment.objects.select_related("user", "tweet").get(id=comment_id)
-            
+
             # Prepare the comment data
             comment_data = {
                 "id": str(comment.id),
@@ -1321,9 +1328,9 @@ def get_user_tweets(request, username):
                 .select_related("user")
                 .prefetch_related("likes", "comments", "retweets")
                 .annotate(
-                    like_count=Count("likes",distinct=True),
-                    comment_count=Count("comments",distinct=True),
-                    retweet_count=Count("retweets",distinct=True),
+                    like_count=Count("likes", distinct=True),
+                    comment_count=Count("comments", distinct=True),
+                    retweet_count=Count("retweets", distinct=True),
                 )
                 .order_by("-created_at")
             )
@@ -1382,9 +1389,9 @@ def search(request):
                     .select_related("user")
                     .prefetch_related("likes", "comments", "retweets")
                     .annotate(
-                        like_count=Count("likes",distinct=True),
-                        comment_count=Count("comments",distinct=True),
-                        retweet_count=Count("retweets",distinct=True),
+                        like_count=Count("likes", distinct=True),
+                        comment_count=Count("comments", distinct=True),
+                        retweet_count=Count("retweets", distinct=True),
                     )
                 )
 

@@ -20,10 +20,13 @@ from django.urls import include, path
 
 from django.conf import settings
 from django.conf.urls.static import static
+from api.views import hello_api  # Import the view
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("api.urls")),  # API routes
+    path("", hello_api),  # Root route
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
