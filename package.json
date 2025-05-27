@@ -1,16 +1,13 @@
 {
-  "name": "social_media",
+  "name": "django_app",
   "version": "1.0.0",
-  "description": " social_media App ",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "concurrently --names \"DJANGO,ANGULAR\" -c \"blue,green\" \"cd app/django_app && python manage.py runserver\" \"cd app/angular_app && ng serve\""
+    "start": "python  manage.py runserver"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "concurrently": "^9.0.1"
-  }
+  "description": ""
 }
